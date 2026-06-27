@@ -3,6 +3,7 @@ import 'package:mybody_rpg_engine/baremes.dart';
 import 'package:mybody_rpg_engine/catalog.dart';
 import 'package:mybody_rpg_engine/decay.dart';
 import 'package:mybody_rpg_engine/progression.dart';
+import 'package:mybody_rpg_engine/promotion.dart';
 import 'package:mybody_rpg_engine/quests.dart';
 import 'package:mybody_rpg_engine/rank.dart';
 import 'package:mybody_rpg_engine/sessions.dart';
@@ -110,6 +111,33 @@ void main() {
   _planDemo();
   _questsDemo();
   _streakDemo();
+  _promotionDemo();
+}
+
+void _promotionDemo() {
+  print('\n=== Examen de promotion du chasseur (D -> C) ===\n');
+  // Joueur rang D, niveau 20 : examen débloqué.
+  print('Tentative avec un bench faible (65 kg @ 80 kg) :');
+  final echec = evaluatePromotion(
+    currentRank: Rank.d,
+    level: 20,
+    bodyWeightKg: 80,
+    entries: const [
+      PerformanceEntry(exercise: AssessmentExercise.bench, charge: 65),
+    ],
+  );
+  print('  -> ${echec.message} (rang : ${echec.newRank.label})\n');
+
+  print('Plus tard, avec un bench plus lourd (80 kg @ 80 kg) :');
+  final succes = evaluatePromotion(
+    currentRank: Rank.d,
+    level: 20,
+    bodyWeightKg: 80,
+    entries: const [
+      PerformanceEntry(exercise: AssessmentExercise.bench, charge: 80),
+    ],
+  );
+  print('  -> ${succes.message} (rang : ${succes.newRank.label})');
 }
 
 void _streakDemo() {

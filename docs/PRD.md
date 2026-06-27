@@ -276,6 +276,22 @@ Un compteur de **jours d'entraînement consécutifs**, pour ancrer l'habitude.
 
 > À ajouter plus tard : recharge mensuelle des jokers.
 
+### 3.13 Examen de promotion du chasseur
+
+Changer de rang ne se fait **pas automatiquement** : atteindre le niveau requis
+**débloque** un examen, mais il faut le **réussir** pour monter de rang.
+
+- Le niveau atteint **déverrouille** l'examen (ex. niveau 20 pour viser le rang C).
+- L'examen = on **refait le test de force** initial (§3.6).
+- Promotion accordée **seulement si** le niveau de force prouvé atteint celui
+  du rang visé. Sinon, le joueur **reste à son rang** et pourra retenter.
+
+> **Note de cohérence :** du coup, le niveau peut « dépasser » le rang. Le rang
+> officiel du joueur est le **rang promu** (gagné par examen), pas simplement
+> celui déduit du niveau. Le niveau sert à *débloquer* l'examen ; la force le
+> *valide*. (Penser à utiliser ce rang promu pour la difficulté des défis et
+> le plancher anti-inactivité.)
+
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable
