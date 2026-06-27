@@ -249,6 +249,21 @@ L'app **crée les séances** pour le joueur (qui n'est pas obligé d'être coach
 
 > Méthode et sources détaillées dans `seances.md`.
 
+### 3.11 Défis quotidiens (jeu de tous les jours)
+
+Chaque jour, **3 petits défis au poids du corps** (faisables partout, sans
+matériel), dont la difficulté **dépend du rang** du joueur.
+
+- Objectif chiffré = `base + pas × rang` (ex. pompes : E:10, D:20, C:30… S:60).
+- Réserve de défis simples : pompes, squats, fentes, gainage, crunchs,
+  jumping jacks, burpees, mountain climbers, chaise, relevés de jambes.
+- Les défis **tournent chaque jour** (et restent les mêmes pour tout le monde
+  un jour donné, façon « défis du jour »).
+- Chaque défi complété rapporte de l'**XP** (alimente le niveau).
+
+> Exemple rang D : « Faire 20 pompes », « Faire 25 squats », « Tenir 30 s de
+> gainage ». Rang S le même jour : 60 pompes, 65 squats…
+
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable

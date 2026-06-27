@@ -3,6 +3,8 @@ import 'package:mybody_rpg_engine/baremes.dart';
 import 'package:mybody_rpg_engine/catalog.dart';
 import 'package:mybody_rpg_engine/decay.dart';
 import 'package:mybody_rpg_engine/progression.dart';
+import 'package:mybody_rpg_engine/quests.dart';
+import 'package:mybody_rpg_engine/rank.dart';
 import 'package:mybody_rpg_engine/sessions.dart';
 import 'package:mybody_rpg_engine/xp.dart';
 
@@ -105,6 +107,25 @@ void main() {
       'exercices disponibles');
 
   _planDemo();
+  _questsDemo();
+}
+
+void _questsDemo() {
+  print('\n=== Défis quotidiens (sans matériel) ===\n');
+  for (final rang in [Rank.d, Rank.s]) {
+    final quests = dailyQuestsForDay(rank: rang, daySeed: 0);
+    final xpTotal = quests.fold<int>(0, (s, q) => s + q.xpReward);
+    print('Rang ${rang.label} (jour 0) — $xpTotal XP à gagner :');
+    for (final q in quests) {
+      print('   • ${q.description}  (+${q.xpReward} XP)');
+    }
+    print('');
+  }
+  // Le lendemain, d'autres défis pour un même rang.
+  print('Rang D, le lendemain (jour 1) :');
+  for (final q in dailyQuestsForDay(rank: Rank.d, daySeed: 1)) {
+    print('   • ${q.description}  (+${q.xpReward} XP)');
+  }
 }
 
 void afficheSalle(String titre, Set<Equipment> equipement) {
