@@ -264,6 +264,18 @@ matériel), dont la difficulté **dépend du rang** du joueur.
 > Exemple rang D : « Faire 20 pompes », « Faire 25 squats », « Tenir 30 s de
 > gainage ». Rang S le même jour : 60 pompes, 65 squats…
 
+### 3.12 Streak (jours d'affilée)
+
+Un compteur de **jours d'entraînement consécutifs**, pour ancrer l'habitude.
+
+- Un **jour actif** = une séance **ou** des défis complétés (compté une fois/jour).
+- Jours consécutifs → le streak monte ; on garde le **record**.
+- **Jokers de gel** (2 par défaut) : un jour manqué est couvert par un joker ;
+  s'il n'y a plus de joker pour les jours manqués, le streak **repart à 1**.
+- Le streak alimente le **bonus d'XP** des séances (cf. §3.1).
+
+> À ajouter plus tard : recharge mensuelle des jokers.
+
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable

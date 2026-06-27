@@ -6,6 +6,7 @@ import 'package:mybody_rpg_engine/progression.dart';
 import 'package:mybody_rpg_engine/quests.dart';
 import 'package:mybody_rpg_engine/rank.dart';
 import 'package:mybody_rpg_engine/sessions.dart';
+import 'package:mybody_rpg_engine/streak.dart';
 import 'package:mybody_rpg_engine/xp.dart';
 
 /// Petite démo : lance le test initial pour un exemple et affiche le résultat.
@@ -108,6 +109,24 @@ void main() {
 
   _planDemo();
   _questsDemo();
+  _streakDemo();
+}
+
+void _streakDemo() {
+  print('\n=== Streak (jours d\'affilée) ===\n');
+  var s = const StreakState(freezesRemaining: 2);
+  // jours 1,2,3 d'affilée, on saute le 4, on reprend le 5.
+  for (final jour in [1, 2, 3, 5, 6]) {
+    final u = registerActivity(s, jour);
+    s = u.state;
+    final info = u.freezesUsed > 0
+        ? ' (joker utilisé, reste ${s.freezesRemaining})'
+        : u.reset
+            ? ' (streak cassé, repart à 1)'
+            : '';
+    print('Jour $jour actif -> streak ${s.current} 🔥$info');
+  }
+  print('Record : ${s.best} jours');
 }
 
 void _questsDemo() {
