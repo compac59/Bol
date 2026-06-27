@@ -202,6 +202,21 @@ L'app **dit au joueur quoi faire** pour progresser, exercice par exercice.
 > ⚠️ La progression « +1 rep / +poids » est gérée **par exercice**, pas via le
 > niveau global du personnage (qui, lui, cumule toutes les séances).
 
+### 3.8 Perte de progression (désentraînement)
+
+Pour donner une vraie raison de revenir, l'XP **diminue** en cas d'inactivité
+prolongée — façon « désentraînement » réel, mais en douceur :
+
+- **Délai de grâce : 4 jours.** Se reposer jusqu'à 4 jours ne coûte rien.
+- Au-delà, perte d'**XP par jour** d'inactivité.
+- **Calibrage : ~2 semaines (14 jours) sans séance = environ 1 niveau perdu.**
+- **Plancher de sécurité : on ne descend jamais sous son rang.** Ex. rang C
+  (niveaux 20-34) → on peut retomber jusqu'au niveau 20, jamais en rang D.
+
+> Objectif : motiver sans décourager. La perte est lente, plafonnée par le
+> rang, et vite récupérable dès qu'on reprend l'entraînement. (Les jokers de
+> « gel de streak » du §3.5 peuvent aussi protéger d'un imprévu.)
+
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable

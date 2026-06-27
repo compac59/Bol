@@ -1,5 +1,6 @@
 import 'package:mybody_rpg_engine/assessment.dart';
 import 'package:mybody_rpg_engine/baremes.dart';
+import 'package:mybody_rpg_engine/decay.dart';
 import 'package:mybody_rpg_engine/progression.dart';
 import 'package:mybody_rpg_engine/xp.dart';
 
@@ -67,5 +68,16 @@ void main() {
     print('Séance $seance : ${state.weightKg.toStringAsFixed(0)} kg × '
         '${state.targetReps} reps -> ${res.message}');
     state = res.next;
+  }
+
+  // --- Perte d'XP par inactivité (désentraînement) ---
+  print('\n=== Perte d\'XP si on ne s\'entraîne pas ===\n');
+  final xpJoueur = totalXpForLevel(5); // joueur pile au niveau 5
+  for (final jours in [4, 7, 14, 30]) {
+    final d = applyXpDecay(totalXp: xpJoueur, daysSinceLastWorkout: jours);
+    final note = d.aPerduUnNiveau ? ' (niveau perdu !)' : '';
+    final plancher = d.plancherAtteint ? ' [plancher de rang]' : '';
+    print('$jours jours sans séance -> -${d.xpPerdu} XP, '
+        'niveau ${d.niveauAvant} → ${d.niveauApres}$note$plancher');
   }
 }
