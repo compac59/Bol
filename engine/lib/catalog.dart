@@ -378,6 +378,17 @@ const Set<String> isolationExerciseIds = {
 extension ExerciseKind on Exercise {
   /// Vrai si l'exercice est poly-articulaire (à placer en premier dans la séance).
   bool get isCompound => !isolationExerciseIds.contains(id);
+
+  /// Chemin de l'illustration (GIF/image) à intégrer dans l'app, par convention
+  /// basée sur l'identifiant. Les fichiers seront ajoutés côté app Flutter.
+  String get imageAsset => 'assets/exercises/$id.gif';
+
+  /// Lien vidéo « technique » qui fonctionne dès maintenant (recherche YouTube),
+  /// en attendant d'éventuelles vidéos intégrées.
+  String get videoSearchUrl {
+    final q = Uri.encodeComponent('$nom musculation technique exécution');
+    return 'https://www.youtube.com/results?search_query=$q';
+  }
 }
 
 /// Retourne les exercices réalisables avec l'équipement disponible.

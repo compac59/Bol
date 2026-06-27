@@ -292,6 +292,24 @@ Changer de rang ne se fait **pas automatiquement** : atteindre le niveau requis
 > *valide*. (Penser à utiliser ce rang promu pour la difficulté des défis et
 > le plancher anti-inactivité.)
 
+### 3.14 Déroulé d'une séance (validation, repos, démonstration)
+
+Pendant la séance, le joueur est guidé série par série :
+
+- **Validation** : à chaque série finie, il la coche (« ✓ »). Quand toutes les
+  séries d'un exercice sont validées, l'exercice est terminé ; la séance est
+  finie quand tous les exercices le sont (avec une barre d'avancement).
+- **Minuteur de repos** : après chaque série (sauf la dernière d'un exercice),
+  l'app lance un compte à rebours de la durée conseillée (selon l'objectif :
+  force ~3 min, masse ~90 s, endurance ~45 s).
+- **Démonstration du mouvement** : chaque exercice a une illustration (asset à
+  intégrer côté app) et un lien vidéo « technique » fonctionnel.
+- En fin de séance : **bilan d'XP** calculé à partir des séries réellement
+  réalisées (volume, streak, records).
+
+> Côté logique, tout est prêt (validation, durée de repos, liens vidéo, bilan).
+> Le compte à rebours animé et les GIF/vidéos intégrés se feront dans l'app.
+
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable

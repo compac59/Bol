@@ -8,6 +8,7 @@ import 'package:mybody_rpg_engine/quests.dart';
 import 'package:mybody_rpg_engine/rank.dart';
 import 'package:mybody_rpg_engine/sessions.dart';
 import 'package:mybody_rpg_engine/streak.dart';
+import 'package:mybody_rpg_engine/workout_session.dart';
 import 'package:mybody_rpg_engine/xp.dart';
 
 /// Petite démo : lance le test initial pour un exemple et affiche le résultat.
@@ -112,6 +113,29 @@ void main() {
   _questsDemo();
   _streakDemo();
   _promotionDemo();
+  _sessionDemo();
+}
+
+void _sessionDemo() {
+  print('\n=== Déroulé d\'une séance (validation + repos) ===\n');
+  final day = generateWeeklyPlan(
+    equipment: Equipment.values.toSet(),
+    goal: TrainingGoal.masse,
+    daysPerWeek: 3,
+  ).days.first;
+  final s = WorkoutSession(day);
+
+  // On déroule le premier exercice série par série.
+  final ex = day.exercises.first;
+  print('Exercice : ${ex.exercise.nom}  (vidéo : ${ex.exercise.videoSearchUrl})');
+  for (var k = 1; k <= ex.sets; k++) {
+    final rest = s.validateSet(0, reps: ex.minReps, weightKg: 60);
+    final reste = rest == null
+        ? 'exercice terminé ✓'
+        : 'repos $rest s ⏱️';
+    print('  Série $k validée ✓ -> $reste');
+  }
+  print('Avancement séance : ${(s.progress * 100).round()}%');
 }
 
 void _promotionDemo() {
