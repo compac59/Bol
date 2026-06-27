@@ -363,6 +363,23 @@ const List<Exercise> exerciseCatalog = [
   ),
 ];
 
+/// Identifiants des exercices d'**isolation** (un seul muscle / une articulation).
+/// Tout le reste est considéré poly-articulaire (compound).
+const Set<String> isolationExerciseIds = {
+  'pec_deck', 'cable_fly',
+  'superman',
+  'lateral_raise', 'face_pull', 'band_pull_apart',
+  'barbell_curl', 'ez_curl', 'db_curl', 'hammer_curl', 'cable_curl',
+  'pushdown', 'skull_crusher', 'db_overhead_ext',
+  'leg_extension', 'leg_curl', 'calf_raise',
+  'crunch', 'leg_raise', 'hanging_leg_raise', 'cable_crunch', 'plank',
+};
+
+extension ExerciseKind on Exercise {
+  /// Vrai si l'exercice est poly-articulaire (à placer en premier dans la séance).
+  bool get isCompound => !isolationExerciseIds.contains(id);
+}
+
 /// Retourne les exercices réalisables avec l'équipement disponible.
 ///
 /// Le poids du corps est toujours ajouté : on n'a jamais besoin de le cocher.

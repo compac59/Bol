@@ -238,6 +238,17 @@ avec ce matériel.
 > Catalogue de ~49 exercices. Exemples : « haltères + banc plat » à la maison
 > → ~17 exercices ; « poids du corps » seul → ~9 ; salle complète → tout.
 
+### 3.10 Génération automatique de séances
+
+L'app **crée les séances** pour le joueur (qui n'est pas obligé d'être coach) :
+
+- Selon le **nombre de jours/semaine** → choix du split (Full Body 1-3j,
+  Haut/Bas 4j, Push/Pull/Legs 5-6j).
+- Séries/reps/repos selon l'**objectif** (force/masse/endurance).
+- Exercices **piochés dans l'équipement disponible**, poly-articulaires d'abord.
+
+> Méthode et sources détaillées dans `seances.md`.
+
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable

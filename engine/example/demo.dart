@@ -3,6 +3,7 @@ import 'package:mybody_rpg_engine/baremes.dart';
 import 'package:mybody_rpg_engine/catalog.dart';
 import 'package:mybody_rpg_engine/decay.dart';
 import 'package:mybody_rpg_engine/progression.dart';
+import 'package:mybody_rpg_engine/sessions.dart';
 import 'package:mybody_rpg_engine/xp.dart';
 
 /// Petite démo : lance le test initial pour un exemple et affiche le résultat.
@@ -102,6 +103,8 @@ void main() {
   afficheSalle('Sans matériel (poids du corps)', {});
   print('Salle complète : ${availableExercises(Equipment.values.toSet()).length} '
       'exercices disponibles');
+
+  _planDemo();
 }
 
 void afficheSalle(String titre, Set<Equipment> equipement) {
@@ -112,4 +115,22 @@ void afficheSalle(String titre, Set<Equipment> equipement) {
     print('  ${groupe.name} : ${exos.map((e) => e.nom).join(', ')}');
   });
   print('');
+}
+
+void _planDemo() {
+  print('\n=== Programme généré (salle complète, masse, 3 jours) ===\n');
+  final plan = generateWeeklyPlan(
+    equipment: Equipment.values.toSet(),
+    goal: TrainingGoal.masse,
+    daysPerWeek: 3,
+  );
+  print('Split : ${plan.split.label}\n');
+  for (final jour in plan.days) {
+    print('— ${jour.nom} —');
+    for (final pe in jour.exercises) {
+      print('   • ${pe.exercise.nom} : ${pe.sets}×${pe.minReps}-${pe.maxReps} '
+          '(repos ${pe.restSeconds}s)');
+    }
+    print('');
+  }
 }
