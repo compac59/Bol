@@ -1,5 +1,6 @@
 import 'package:mybody_rpg_engine/assessment.dart';
 import 'package:mybody_rpg_engine/baremes.dart';
+import 'package:mybody_rpg_engine/catalog.dart';
 import 'package:mybody_rpg_engine/decay.dart';
 import 'package:mybody_rpg_engine/progression.dart';
 import 'package:mybody_rpg_engine/xp.dart';
@@ -91,4 +92,24 @@ void main() {
     print('$jours jours sans séance -> -${d.xpPerdu} XP, '
         'niveau ${d.niveauAvant} → ${d.niveauApres}$note$plancher');
   }
+
+  // --- Exercices proposés selon l'équipement du profil ---
+  print('\n=== Exercices proposés selon l\'équipement ===\n');
+  afficheSalle('À la maison (haltères + banc)', {
+    Equipment.dumbbells,
+    Equipment.bench,
+  });
+  afficheSalle('Sans matériel (poids du corps)', {});
+  print('Salle complète : ${availableExercises(Equipment.values.toSet()).length} '
+      'exercices disponibles');
+}
+
+void afficheSalle(String titre, Set<Equipment> equipement) {
+  final parGroupe = availableExercisesByGroup(equipement);
+  final total = parGroupe.values.fold<int>(0, (s, l) => s + l.length);
+  print('$titre -> $total exercices :');
+  parGroupe.forEach((groupe, exos) {
+    print('  ${groupe.name} : ${exos.map((e) => e.nom).join(', ')}');
+  });
+  print('');
 }

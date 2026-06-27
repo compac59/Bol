@@ -217,10 +217,28 @@ prolongée — façon « désentraînement » réel, mais en douceur :
 > rang, et vite récupérable dès qu'on reprend l'entraînement. (Les jokers de
 > « gel de streak » du §3.5 peuvent aussi protéger d'un imprévu.)
 
+### 3.9 Équipement & exercices adaptés
+
+À la création du profil, le joueur **coche l'équipement qu'il possède** (dans sa
+salle ou chez lui). L'app ne lui propose alors que les exercices **réalisables**
+avec ce matériel.
+
+- Équipements cochables : barre + disques, haltères, banc, machines guidées,
+  poulie/câble, barre de traction.
+- Le **poids du corps** est toujours disponible (pas besoin de le cocher).
+- Un exercice n'apparaît que si **tout** son équipement requis est coché
+  (ex. développé couché = barre **+** banc).
+- Le joueur peut modifier son équipement plus tard (s'il change de salle).
+
+> Exemple : « haltères + banc » à la maison → ~13 exercices proposés ;
+> « poids du corps » seul → ~6 ; salle complète → tout le catalogue.
+
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable
 - [ ] Onboarding + création de personnage (pseudo, poids de corps, objectif).
+- [ ] **Sélection de l'équipement disponible** (salle, maison, poids du corps)
+      → l'app ne propose que les exercices réalisables (§3.9).
 - [ ] **Test initial** d'évaluation (§3.6) → niveau, rang et stats de départ.
 - [ ] Bibliothèque d'exercices (groupe musculaire, équipement, consignes).
 - [ ] Lancement d'une séance : ajouter exercices, séries (reps × charge),
@@ -280,7 +298,7 @@ ouverture de récompense). Sons/vibrations optionnels.
 ### Modèle de données (esquisse)
 
 ```
-User        { id, pseudo, poidsCorps, level, xp, rank, createdAt }
+User        { id, pseudo, poidsCorps, objectif, equipement[], level, xp, rank, createdAt }
 Stat        { userId, str, end, agi, wil, vit }
 Assessment  { id, userId, date, exerciseId, charge, reps, oneRmEstime }  // test initial
 
