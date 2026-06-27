@@ -8,6 +8,12 @@
 - **Référence :** standards de force courants (style StrengthLevel)
 - **Base :** valeurs pour **homme** (ajustement femme prévu plus bas)
 
+> ℹ️ **Le test initial reste volontairement léger** : uniquement les gros
+> exercices polyarticulaires (mesure fiable et rapide). Les exercices de bras
+> et d'isolation sont gérés dans la **bibliothèque d'exercices** (voir
+> `bibliotheque-exercices.md`), pour les vraies séances et la progression au
+> quotidien — pas dans le test d'évaluation.
+
 ---
 
 ## 1. Principe : le ratio force/poids
