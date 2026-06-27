@@ -1,5 +1,6 @@
 import 'package:mybody_rpg_engine/assessment.dart';
 import 'package:mybody_rpg_engine/baremes.dart';
+import 'package:mybody_rpg_engine/xp.dart';
 
 /// Petite démo : lance le test initial pour un exemple et affiche le résultat.
 /// À lancer avec :  dart run example/demo.dart
@@ -24,4 +25,26 @@ void main() {
   print('Rang global    : ${result.globalRank.label}');
   print('Niveau départ  : ${result.startingLevel}');
   print('Stats départ   : ${result.stats}');
+
+  // --- Exemple de gain d'XP pour une séance ---
+  print('\n=== Exemple : gain d\'XP d\'une séance ===\n');
+  final xp = computeWorkoutXp(
+    sets: const [
+      WorkoutSet(reps: 10, charge: 60), // développé couché
+      WorkoutSet(reps: 10, charge: 60),
+      WorkoutSet(reps: 8, charge: 80), // squat
+      WorkoutSet(reps: 8, charge: 80),
+    ],
+    streakJours: 3,
+    nbRecords: 1,
+  );
+  print('Détail : ${xp}');
+  print('XP gagné : ${xp.total.round()}');
+
+  // --- Où ça mène en termes de niveau ---
+  const totalXp = 500;
+  final prog = levelFromTotalXp(totalXp);
+  print('\nAvec $totalXp XP total -> niveau ${prog.level} '
+      '(${prog.xpDansNiveau}/${prog.xpPourNiveauSuivant} XP, '
+      '${(prog.fraction * 100).round()}% du niveau)');
 }
