@@ -1,4 +1,4 @@
-# PRD — « LevelUp Gym » (nom de travail)
+# PRD — « MyBody:RPG »
 
 > Application mobile Android de musculation avec un système de progression
 > **RPG façon Solo Leveling** : chaque entraînement te fait gagner de l'XP,
@@ -7,6 +7,16 @@
 - **Statut :** Brouillon v1 (à itérer)
 - **Plateforme :** Android (Flutter, iOS possible plus tard)
 - **Cible :** débutants → intermédiaires qui veulent rester motivés grâce au jeu
+
+### Décisions actées (v1)
+- **Nom :** MyBody:RPG.
+- **Avatar/visuel :** on commence **simple** (icônes + barres), priorité au
+  fond (le moteur de jeu) ; la forme (illustrations/avatar) viendra plus tard.
+- **Stats :** **répartition automatique** + un **test initial** qui fixe le
+  niveau et les stats de départ (voir §3.6).
+- **Unités :** **kg uniquement** au MVP.
+- **Discipline :** **musculation uniquement** au début (cardio/poids du corps
+  plus tard).
 
 ---
 
@@ -137,12 +147,45 @@ Paliers de niveau qui débloquent un **rang de chasseur** (cosmétique + fierté
   récompense + titre exclusif.
 - **Streak** : compteur de jours, avec « gel de streak » (1-2 jokers/mois).
 
+### 3.6 Test initial (« Évaluation du chasseur »)
+
+À la création du personnage, le joueur passe un **bilan de force** qui fixe son
+**niveau et ses stats de départ** (au lieu de partir tout le monde au niveau 1).
+Ça personnalise l'expérience et évite à un confirmé de « regrinder » depuis zéro.
+
+**Principe :** le joueur renseigne (ou teste) sa **performance max** sur
+quelques exercices de référence couvrant les grands groupes musculaires :
+
+| Mouvement de référence | Stat principale |
+|---|---|
+| Développé couché (bench) | 💪 Force (haut du corps) |
+| Squat | 💪 Force (bas du corps) |
+| Soulevé de terre (deadlift) | 💪 Force (chaîne postérieure) |
+| Tractions / rowing (reps max) | 🛡️ Volonté + 🔥 Endurance |
+| Développé militaire (overhead) | ⚡ Explosivité / épaules |
+
+**Saisie possible de 2 façons :**
+- **1RM connu** (charge max sur 1 rep), ou
+- **charge × reps** → on **estime le 1RM** via la formule d'Epley :
+  `1RM ≈ charge × (1 + reps / 30)`.
+
+**Normalisation par le poids de corps** (ratio force/poids) pour comparer
+équitablement : `ratio = 1RM / poids_corps`. On mappe ensuite le ratio sur des
+paliers (ex. bench : débutant <0.75×PC, intermédiaire ~1×PC, avancé ~1.5×PC)
+pour calculer le **niveau de départ**, le **rang** et la **répartition initiale
+des stats**.
+
+> Le test est **optionnel/rapide** : le joueur peut sauter et démarrer au
+> niveau 1, ou ne remplir que les exercices qu'il connaît. Il pourra **refaire
+> l'évaluation** plus tard pour réajuster (utile après une longue pause).
+
 ---
 
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable
-- [ ] Onboarding + création de personnage (pseudo, avatar simple, objectif).
+- [ ] Onboarding + création de personnage (pseudo, poids de corps, objectif).
+- [ ] **Test initial** d'évaluation (§3.6) → niveau, rang et stats de départ.
 - [ ] Bibliothèque d'exercices (groupe musculaire, équipement, consignes).
 - [ ] Lancement d'une séance : ajouter exercices, séries (reps × charge),
       minuteur de repos.
@@ -201,8 +244,10 @@ ouverture de récompense). Sons/vibrations optionnels.
 ### Modèle de données (esquisse)
 
 ```
-User        { id, pseudo, avatar, level, xp, rank, createdAt }
+User        { id, pseudo, poidsCorps, level, xp, rank, createdAt }
 Stat        { userId, str, end, agi, wil, vit }
+Assessment  { id, userId, date, exerciseId, charge, reps, oneRmEstime }  // test initial
+
 Exercise    { id, nom, groupeMusculaire, equipement, type }   // catalogue
 Workout     { id, userId, date, dureeMin, xpGagne }
 WorkoutSet  { id, workoutId, exerciseId, reps, charge, ordre }
@@ -265,11 +310,18 @@ lib/
 
 ---
 
-## 10. Questions ouvertes (à trancher ensemble)
+## 10. Décisions & questions restantes
 
-- Nom définitif de l'app ?
-- Avatar : 2D illustré, pixel-art, ou simple barre/icônes au début ?
-- Les stats se répartissent automatiquement ou manuellement (choix du joueur) ?
-- kg uniquement ou kg/lb dès le MVP ?
-- Veut-on un mode « cardio/poids du corps » dès le MVP ou full muscu ?
+**Tranché :**
+- ✅ Nom : **MyBody:RPG**.
+- ✅ Visuel : icônes/barres au début, focus sur le fond.
+- ✅ Stats : **auto** + **test initial** pour le niveau/stats de départ.
+- ✅ Unités : **kg** uniquement.
+- ✅ Discipline : **musculation** uniquement au MVP.
+
+**Encore à trancher :**
+- Liste exacte des exercices du test initial (5 proposés en §3.6 — OK ?).
+- Paliers de ratio force/poids par exercice (à caler avec des barèmes connus).
+- Répartition fine des points de stat par type de série (à équilibrer au code).
+- Plafond d'XP/jour anti-farm (valeur ?).
 ```
