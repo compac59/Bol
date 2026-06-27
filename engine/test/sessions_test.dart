@@ -71,6 +71,30 @@ void main() {
       expect(plan.days.first.exercises.first.exercise.isCompound, isTrue);
     });
 
+    test('rotation : les séances full body varient d\'un jour à l\'autre', () {
+      final plan = generateWeeklyPlan(
+        equipment: salleComplete,
+        goal: TrainingGoal.masse,
+        daysPerWeek: 3,
+      );
+      List<String> idsOf(WorkoutDay d) =>
+          d.exercises.map((e) => e.exercise.id).toList();
+      // Les 3 jours ne doivent pas être tous identiques.
+      expect(idsOf(plan.days[0]), isNot(equals(idsOf(plan.days[1]))));
+      expect(idsOf(plan.days[1]), isNot(equals(idsOf(plan.days[2]))));
+    });
+
+    test('rotation : le 1er exercice reste poly-articulaire chaque jour', () {
+      final plan = generateWeeklyPlan(
+        equipment: salleComplete,
+        goal: TrainingGoal.masse,
+        daysPerWeek: 3,
+      );
+      for (final d in plan.days) {
+        expect(d.exercises.first.exercise.isCompound, isTrue);
+      }
+    });
+
     test('au poids du corps seul, le programme se génère quand même', () {
       final plan = generateWeeklyPlan(
         equipment: {},

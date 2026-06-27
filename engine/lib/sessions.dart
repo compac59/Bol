@@ -140,16 +140,52 @@ List<_DayTemplate> _templatesFor(SplitType split, int days) {
   }
 }
 
+/// Prend [n] éléments de [pool] en partant de l'indice [rotation] (avec retour
+/// au début), sans doublon. Sert à varier les exercices d'un jour à l'autre.
+void _takeRotated(List<Exercise> pool, int n, int rotation, List<Exercise> out) {
+  if (pool.isEmpty || n <= 0) return;
+  for (var i = 0; i < n && i < pool.length; i++) {
+    out.add(pool[(rotation + i) % pool.length]);
+  }
+}
+
 /// Sélectionne jusqu'à [count] exercices d'un groupe, poly-articulaires
 /// d'abord, parmi ceux réalisables avec l'équipement disponible.
-List<Exercise> _pick(MuscleGroup group, int count, Set<Equipment> equipment) {
+///
+/// [rotation] (l'indice du jour) décale la sélection pour **varier** les
+/// exercices d'une séance à l'autre, en conservant le même nombre de
+/// poly-articulaires / d'isolation.
+List<Exercise> _pick(
+  MuscleGroup group,
+  int count,
+  Set<Equipment> equipment,
+  int rotation,
+) {
   final candidats =
       availableExercises(equipment).where((e) => e.group == group).toList()
         ..sort((a, b) {
           if (a.isCompound == b.isCompound) return 0;
           return a.isCompound ? -1 : 1; // compounds en premier
         });
-  return candidats.take(count).toList();
+  if (candidats.isEmpty) return [];
+
+  final compounds = candidats.where((e) => e.isCompound).toList();
+  final isolations = candidats.where((e) => !e.isCompound).toList();
+
+  // Combien de compounds dans une sélection « brute » des `count` premiers :
+  // on garde ce ratio pour que la structure reste la même chaque jour.
+  final nbCompound = candidats.take(count).where((e) => e.isCompound).length;
+
+  final result = <Exercise>[];
+  _takeRotated(compounds, nbCompound, rotation, result);
+  _takeRotated(isolations, count - nbCompound, rotation, result);
+
+  // Filet de sécurité : compléter si on n'a pas atteint `count`.
+  for (final e in candidats) {
+    if (result.length >= count) break;
+    if (!result.contains(e)) result.add(e);
+  }
+  return result;
 }
 
 /// Génère un programme hebdomadaire adapté à l'équipement et à l'objectif.
@@ -168,10 +204,11 @@ WeeklyPlan generateWeeklyPlan({
   final rest = _restFor(goal);
 
   final days = <WorkoutDay>[];
-  for (final t in templates) {
+  for (var jour = 0; jour < templates.length; jour++) {
+    final t = templates[jour];
     final exercises = <PlannedExercise>[];
     for (final g in t.groups) {
-      for (final ex in _pick(g.group, g.count, equipment)) {
+      for (final ex in _pick(g.group, g.count, equipment, jour)) {
         exercises.add(PlannedExercise(
           exercise: ex,
           sets: sets,

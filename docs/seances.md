@@ -38,10 +38,16 @@ Principe validé : un débutant progresse mieux en travaillant tout le corps
   (curls, extensions…) : on attaque les gros mouvements quand on est frais.
 - Chaque séance couvre les groupes musculaires prévus par le split.
 
-## 5. Limites actuelles (à améliorer plus tard)
+## 5. Rotation des exercices
 
-- Les séances Full Body d'une même semaine sont identiques (pas encore de
-  rotation des exercices pour varier d'un jour à l'autre).
+Pour éviter la monotonie, les exercices **tournent d'une séance à l'autre** :
+le numéro du jour décale la sélection dans chaque groupe musculaire, tout en
+gardant le même nombre de poly-articulaires / d'isolation (et un compound en
+tête). Exemple sur les jambes : jour 1 Squat → jour 2 Squat à la Smith →
+jour 3 Presse à cuisses.
+
+## 6. Limites actuelles (à améliorer plus tard)
+
 - Pas encore de gestion fine de la récupération ni de la progression du
   programme sur plusieurs semaines (périodisation).
 
