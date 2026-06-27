@@ -1,4 +1,5 @@
 import 'baremes.dart';
+import 'level_rank.dart';
 import 'rank.dart';
 
 /// Une performance saisie par le joueur lors du test initial.
@@ -76,15 +77,24 @@ class CharacterStats {
       'STR:$force END:$endurance AGI:$explosivite WIL:$volonte VIT:$vitalite';
 }
 
-/// Niveau de départ selon le rang global (bas de la fourchette du PRD).
-const Map<Rank, int> _startingLevelByRank = {
-  Rank.e: 1,
-  Rank.d: 10,
-  Rank.c: 20,
-  Rank.b: 35,
-  Rank.a: 50,
-  Rank.s: 70,
-};
+/// Convertit un score continu (rang + fraction) en **niveau de départ fin**,
+/// interpolé à l'intérieur de la tranche de niveaux du rang.
+///
+/// Ex. score 1.25 (rang D + 25%) : rang D va du niveau 10 au 19 (10 niveaux),
+/// donc niveau = 10 + floor(0.25 × 10) = 12.
+int startingLevelFromScore(double score) {
+  final rank = Rank.fromIndex(score.floor());
+  final fraction = score - score.floor();
+  final base = rankBaseLevel(rank);
+
+  // Rang S : pas de tranche supérieure, on reste au niveau de base
+  // (le joueur grandira ensuite via l'XP).
+  if (rank.index >= Rank.values.length - 1) return base;
+
+  final nextBase = rankBaseLevel(Rank.fromIndex(rank.index + 1));
+  final tailleTranche = nextBase - base;
+  return base + (fraction * tailleTranche).floor();
+}
 
 /// Valeur de stat associée à un rang (E faible → S élevé).
 const Map<Rank, int> _statValueByRank = {
@@ -106,8 +116,9 @@ AssessmentResult evaluate({
     throw ArgumentError('Au moins une performance est requise.');
   }
 
-  // 1) Rang par exercice.
+  // 1) Pour chaque exercice : rang (affichage) + score continu (niveau fin).
   final perExerciseRank = <AssessmentExercise, Rank>{};
+  final scores = <double>[];
   for (final e in entries) {
     final double valeur;
     if (isRepsBased(e.exercise)) {
@@ -118,15 +129,16 @@ AssessmentResult evaluate({
       valeur = oneRm / bodyWeightKg; // ratio force/poids
     }
     perExerciseRank[e.exercise] = rankForValue(e.exercise, valeur);
+    scores.add(rankScoreForValue(e.exercise, valeur));
   }
 
-  // 2) Rang global = moyenne (arrondie) des indices de rang.
-  final indices = perExerciseRank.values.map((r) => r.index).toList();
-  final moyenne = indices.reduce((a, b) => a + b) / indices.length;
-  final globalRank = Rank.fromIndex(moyenne.round());
+  // 2) Score global = moyenne des scores continus.
+  //    Le rang global = partie entière (on est DANS ce rang).
+  final scoreGlobal = scores.reduce((a, b) => a + b) / scores.length;
+  final globalRank = Rank.fromIndex(scoreGlobal.floor());
 
-  // 3) Niveau de départ.
-  final startingLevel = _startingLevelByRank[globalRank]!;
+  // 3) Niveau de départ fin, interpolé dans la tranche du rang.
+  final startingLevel = startingLevelFromScore(scoreGlobal);
 
   // 4) Stats de départ (moyenne des valeurs de rang des exos concernés).
   final stats = _statsFromRanks(perExerciseRank);

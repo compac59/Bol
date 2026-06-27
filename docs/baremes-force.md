@@ -79,6 +79,23 @@ Ce rang global fixe le **niveau de départ** et la **répartition des stats**.
 
 ---
 
+## 3 bis. Niveau fin : position DANS le rang
+
+Le rang ne suffit pas : deux personnes rang D peuvent être très différentes.
+On calcule donc un **score continu** = rang + position dans la fourchette, pour
+en déduire un **niveau précis** à l'intérieur de la tranche du rang.
+
+**Exemple (ton cas) :** homme 80 kg, bench **65 kg** → ratio 0.81.
+- Le rang D au bench va de **0.75** (= 60 kg) à **1.00** (= 80 kg).
+- 0.81 est à **25 %** dans cette fourchette.
+- Rang D = niveaux **10 à 19** → niveau = 10 + 25 % × 10 ≈ **niveau 12**.
+
+Donc à 65 kg tu n'es **pas** niveau 10 (le tout début de D, à 60 kg), mais
+**niveau 12**. À 60 kg pile → niveau 10. À presque 80 kg → proche du niveau 19.
+
+> Avec plusieurs exercices, on fait la **moyenne des scores continus**, puis on
+> en déduit le rang global (partie entière) et le niveau fin (la fraction).
+
 ## 4. Du rang aux stats de départ
 
 Chaque exercice nourrit surtout **une stat** :

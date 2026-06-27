@@ -28,6 +28,17 @@ void main() {
   print('Niveau départ  : ${result.startingLevel}');
   print('Stats départ   : ${result.stats}');
 
+  // Exemple ciblé : homme 80 kg qui ne renseigne que le bench à 65 kg.
+  final benchSeul = evaluate(
+    bodyWeightKg: 80,
+    entries: const [
+      PerformanceEntry(exercise: AssessmentExercise.bench, charge: 65),
+    ],
+  );
+  print('\nHomme 80 kg, bench 65 kg (ratio 0.81) -> '
+      'rang ${benchSeul.globalRank.label}, niveau ${benchSeul.startingLevel} '
+      '(et non niveau 10 = tout début du rang D)');
+
   // --- Exemple de gain d'XP pour une séance ---
   print('\n=== Exemple : gain d\'XP d\'une séance ===\n');
   final xp = computeWorkoutXp(

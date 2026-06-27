@@ -63,8 +63,9 @@ void main() {
       expect(result.globalRank, Rank.c);
     });
 
-    test('niveau de départ = 20 (rang C)', () {
-      expect(result.startingLevel, 20);
+    test('niveau de départ fin = 23 (dans la tranche du rang C)', () {
+      // Score moyen ≈ 2.2 (rang C + 20%) -> niveau 20 + floor(0.2×15) = 23.
+      expect(result.startingLevel, 23);
     });
 
     test('les stats sont cohérentes (valeurs entre 10 et 90)', () {
@@ -78,6 +79,34 @@ void main() {
       ]) {
         expect(v, inInclusiveRange(10, 90));
       }
+    });
+  });
+
+  group('Niveau fin dans la tranche du rang (exemple utilisateur)', () {
+    test('homme 80 kg, bench 65 kg -> rang D, niveau 12 (pas 10)', () {
+      // ratio = 65/80 = 0.8125, entre D(0.75) et C(1.00) -> 25% dans D.
+      // Rang D = niveaux 10-19 -> niveau 10 + floor(0.25×10) = 12.
+      final r = evaluate(
+        bodyWeightKg: 80,
+        entries: const [
+          PerformanceEntry(exercise: AssessmentExercise.bench, charge: 65),
+        ],
+      );
+      expect(r.perExerciseRank[AssessmentExercise.bench], Rank.d);
+      expect(r.globalRank, Rank.d);
+      expect(r.startingLevel, 12);
+    });
+
+    test('au tout début de la fourchette D (60 kg) -> niveau 10', () {
+      // ratio = 60/80 = 0.75 exactement -> 0% dans D -> niveau de base 10.
+      final r = evaluate(
+        bodyWeightKg: 80,
+        entries: const [
+          PerformanceEntry(exercise: AssessmentExercise.bench, charge: 60),
+        ],
+      );
+      expect(r.globalRank, Rank.d);
+      expect(r.startingLevel, 10);
     });
   });
 

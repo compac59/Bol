@@ -45,3 +45,23 @@ Rank rankForValue(AssessmentExercise ex, double valeur) {
   }
   return rang;
 }
+
+/// Score **continu** de force : indice du rang + position dans la fourchette.
+///
+/// Ex. bench à ratio 0.8125 (entre D=0.75 et C=1.00) :
+/// fraction = (0.8125 - 0.75) / (1.00 - 0.75) = 0.25 → score = 1.25 (D + 25%).
+/// Sert à calculer un niveau **fin** à l'intérieur du rang.
+double rankScoreForValue(AssessmentExercise ex, double valeur) {
+  final seuils = baremes[ex]!;
+  if (valeur < seuils.first) return 0; // sous E -> bas de E
+  for (var i = 0; i < seuils.length; i++) {
+    // Dernier palier (S) : pas de borne supérieure.
+    if (i == seuils.length - 1) return i.toDouble();
+    final bas = seuils[i];
+    final haut = seuils[i + 1];
+    if (valeur >= bas && valeur < haut) {
+      return i + (valeur - bas) / (haut - bas);
+    }
+  }
+  return (seuils.length - 1).toDouble();
+}
