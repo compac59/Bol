@@ -1,0 +1,12 @@
+name: mybody_rpg_engine
+description: >-
+  Moteur de jeu (logique pure) de MyBody:RPG — calculs d'XP, de niveaux,
+  de stats et du test initial. Aucune dépendance UI : 100% testable.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.0.0
+
+dev_dependencies:
+  test: ^1.24.0

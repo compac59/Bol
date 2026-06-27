@@ -1,0 +1,5 @@
+# Fichiers générés par Dart — pas besoin de les versionner
+.dart_tool/
+.packages
+build/
+pubspec.lock
