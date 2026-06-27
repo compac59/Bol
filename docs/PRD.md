@@ -223,15 +223,20 @@ prolongée — façon « désentraînement » réel, mais en douceur :
 salle ou chez lui). L'app ne lui propose alors que les exercices **réalisables**
 avec ce matériel.
 
-- Équipements cochables : barre + disques, haltères, banc, machines guidées,
-  poulie/câble, barre de traction.
+- **~20 équipements précis** cochables, par familles :
+  - Poids libres : barre + disques, haltères, barre EZ, kettlebell, élastiques
+  - Bancs & supports : banc plat, banc inclinable, rack à squat, Smith machine,
+    barre de traction, station à dips, poulie/câble
+  - Machines guidées : tirage vertical, rowing assis, presse à pectoraux,
+    pec deck, développé épaules, **presse à cuisses**, leg extension, leg curl,
+    machine à mollets
 - Le **poids du corps** est toujours disponible (pas besoin de le cocher).
 - Un exercice n'apparaît que si **tout** son équipement requis est coché
-  (ex. développé couché = barre **+** banc).
+  (ex. développé couché = barre **+** banc plat ; presse à cuisses = sa machine).
 - Le joueur peut modifier son équipement plus tard (s'il change de salle).
 
-> Exemple : « haltères + banc » à la maison → ~13 exercices proposés ;
-> « poids du corps » seul → ~6 ; salle complète → tout le catalogue.
+> Catalogue de ~49 exercices. Exemples : « haltères + banc plat » à la maison
+> → ~17 exercices ; « poids du corps » seul → ~9 ; salle complète → tout.
 
 ## 4. Fonctionnalités (scope)
 

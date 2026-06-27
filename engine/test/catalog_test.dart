@@ -3,36 +3,45 @@ import 'package:mybody_rpg_engine/progression.dart' show MuscleGroup;
 import 'package:test/test.dart';
 
 void main() {
-  group('Filtrage des exercices par équipement', () {
+  group('Catalogue & équipement', () {
+    test('~20 équipements cochables (hors poids du corps)', () {
+      expect(Equipment.values.length - 1, greaterThanOrEqualTo(18));
+    });
+
     test('aucun équipement coché = seulement le poids du corps', () {
       final dispo = availableExercises({});
-      // Tous les exercices renvoyés ne demandent que le poids du corps.
       expect(dispo, isNotEmpty);
       for (final ex in dispo) {
         expect(ex.equipment, {Equipment.bodyweight});
       }
-      // On retrouve bien quelques classiques au poids du corps.
       final ids = dispo.map((e) => e.id).toSet();
-      expect(ids, containsAll(['pushups', 'dips', 'plank', 'lunges']));
-      // Mais pas le développé couché (barre + banc requis).
+      expect(ids, containsAll(['pushups', 'bodyweight_squat', 'plank']));
       expect(ids, isNot(contains('bench_press')));
     });
 
-    test('barre + banc = on débloque le développé couché', () {
-      final dispo = availableExercises({Equipment.barbell, Equipment.bench});
+    test('barre + banc plat = on débloque le développé couché', () {
+      final dispo =
+          availableExercises({Equipment.barbell, Equipment.flatBench});
       final ids = dispo.map((e) => e.id).toSet();
       expect(ids, contains('bench_press'));
       expect(ids, contains('barbell_row')); // barre seule suffit
-      // Pas encore le curl haltères (haltères non cochés).
-      expect(ids, isNot(contains('db_curl')));
+      // Incliné pas encore (banc inclinable manquant).
+      expect(ids, isNot(contains('incline_press')));
     });
 
-    test('haltères seuls : pas le développé haltères (banc manquant)', () {
-      final dispo = availableExercises({Equipment.dumbbells});
+    test('équipement précis : presse à cuisses seule', () {
+      final dispo = availableExercises({Equipment.legPress});
       final ids = dispo.map((e) => e.id).toSet();
-      expect(ids, contains('db_curl'));
-      expect(ids, contains('lateral_raise'));
-      expect(ids, isNot(contains('db_press'))); // a besoin du banc
+      expect(ids, contains('leg_press'));
+      // Pas de leg extension (machine différente non cochée).
+      expect(ids, isNot(contains('leg_extension')));
+    });
+
+    test('presse à pectoraux seule débloque l\'exercice machine', () {
+      final dispo = availableExercises({Equipment.chestPress});
+      final ids = dispo.map((e) => e.id).toSet();
+      expect(ids, contains('chest_press_machine'));
+      expect(ids, isNot(contains('pec_deck'))); // machine différente
     });
 
     test('tout l\'équipement = tout le catalogue', () {
@@ -40,13 +49,17 @@ void main() {
       expect(availableExercises(tout).length, exerciseCatalog.length);
     });
 
-    test('regroupement par muscle', () {
+    test('chaque groupe musculaire a au moins un exercice (salle complète)', () {
       final parGroupe = availableExercisesByGroup(Equipment.values.toSet());
-      // Chaque groupe musculaire a au moins un exercice.
       for (final g in MuscleGroup.values) {
         expect(parGroupe[g], isNotNull, reason: 'groupe $g vide');
         expect(parGroupe[g]!, isNotEmpty);
       }
+    });
+
+    test('tous les identifiants d\'exercices sont uniques', () {
+      final ids = exerciseCatalog.map((e) => e.id).toList();
+      expect(ids.toSet().length, ids.length);
     });
   });
 }

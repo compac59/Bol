@@ -95,9 +95,9 @@ void main() {
 
   // --- Exercices proposés selon l'équipement du profil ---
   print('\n=== Exercices proposés selon l\'équipement ===\n');
-  afficheSalle('À la maison (haltères + banc)', {
+  afficheSalle('À la maison (haltères + banc plat)', {
     Equipment.dumbbells,
-    Equipment.bench,
+    Equipment.flatBench,
   });
   afficheSalle('Sans matériel (poids du corps)', {});
   print('Salle complète : ${availableExercises(Equipment.values.toSet()).length} '
