@@ -181,6 +181,27 @@ des stats**.
 
 ---
 
+### 3.7 Progression guidée (double progression)
+
+L'app **dit au joueur quoi faire** pour progresser, exercice par exercice.
+
+- À la création du profil, le joueur choisit un **objectif** qui fixe la
+  fourchette de répétitions visée :
+  - 🔋 **Endurance** → 12–20 reps
+  - 🧱 **Prise de masse** → 8–12 reps
+  - 🏋️ **Force** → 5–8 reps
+- Sur chaque exercice, tant que le joueur réussit son objectif :
+  **+1 rep** à la séance suivante.
+- Quand il atteint le **haut de la fourchette** sur toutes ses séries :
+  **palier débloqué** → on augmente le poids et on repart au bas de la
+  fourchette. Chaque palier = mini « level up » de l'exercice (XP + record).
+- **Pas d'augmentation du poids** selon le groupe musculaire :
+  - 💪 Bras (biceps/triceps) et épaules → **+2 kg**
+  - 🫁 Pecs, dos, jambes → **+5 kg**
+
+> ⚠️ La progression « +1 rep / +poids » est gérée **par exercice**, pas via le
+> niveau global du personnage (qui, lui, cumule toutes les séances).
+
 ## 4. Fonctionnalités (scope)
 
 ### MVP (v1) — indispensable

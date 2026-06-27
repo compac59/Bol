@@ -1,5 +1,6 @@
 import 'package:mybody_rpg_engine/assessment.dart';
 import 'package:mybody_rpg_engine/baremes.dart';
+import 'package:mybody_rpg_engine/progression.dart';
 import 'package:mybody_rpg_engine/xp.dart';
 
 /// Petite démo : lance le test initial pour un exemple et affiche le résultat.
@@ -47,4 +48,24 @@ void main() {
   print('\nAvec $totalXp XP total -> niveau ${prog.level} '
       '(${prog.xpDansNiveau}/${prog.xpPourNiveauSuivant} XP, '
       '${(prog.fraction * 100).round()}% du niveau)');
+
+  // --- Double progression sur le développé couché (objectif : prise de masse) ---
+  print('\n=== Progression : développé couché (objectif prise de masse) ===\n');
+  const goal = TrainingGoal.masse; // 8-12 reps
+  const group = MuscleGroup.pectoraux; // +5 kg par palier
+  var state = const ProgressionState(weightKg: 60, targetReps: 11);
+
+  // On simule 4 séances où le joueur réussit son objectif à chaque fois.
+  for (var seance = 1; seance <= 4; seance++) {
+    final reps = List.filled(3, state.targetReps); // 3 séries réussies
+    final res = applySession(
+      state: state,
+      repsPerSet: reps,
+      goal: goal,
+      group: group,
+    );
+    print('Séance $seance : ${state.weightKg.toStringAsFixed(0)} kg × '
+        '${state.targetReps} reps -> ${res.message}');
+    state = res.next;
+  }
 }
