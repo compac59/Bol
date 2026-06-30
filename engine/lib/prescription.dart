@@ -94,12 +94,14 @@ const Map<String, (RefLift, double)> _exerciseCoef = {
   'seated_row': (RefLift.pull, 0.90),
   'deadlift': (RefLift.deadlift, 1.00),
   'kb_swing': (RefLift.deadlift, 0.25),
+  'band_row': (RefLift.pull, 0.40),
   // Épaules
   'ohp': (RefLift.overhead, 1.00),
   'db_shoulder_press': (RefLift.overhead, 0.40),
   'shoulder_press_machine': (RefLift.overhead, 0.90),
   'lateral_raise': (RefLift.overhead, 0.20),
   'face_pull': (RefLift.overhead, 0.40),
+  'band_pull_apart': (RefLift.overhead, 0.25),
   // Biceps
   'barbell_curl': (RefLift.bench, 0.35),
   'ez_curl': (RefLift.bench, 0.33),
@@ -119,6 +121,8 @@ const Map<String, (RefLift, double)> _exerciseCoef = {
   'leg_extension': (RefLift.squat, 0.55),
   'leg_curl': (RefLift.squat, 0.40),
   'calf_raise': (RefLift.squat, 0.80),
+  // Abdos
+  'cable_crunch': (RefLift.bench, 0.40),
 };
 
 /// La consigne pour un exercice : charge conseillée (ou poids du corps) + reps.

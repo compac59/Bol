@@ -49,14 +49,13 @@ void main() {
       expect(pr.targetReps, 8);
     });
 
-    test('exercice au poids du corps -> pas de charge', () {
-      final pr = prescribe(
-        exercise: byId('pushups'),
-        profile: profile,
-        goal: TrainingGoal.masse,
-      );
-      expect(pr.bodyweight, isTrue);
-      expect(pr.suggestedWeightKg, isNull);
+    test('tous les exercices du catalogue ont une charge conseillée', () {
+      for (final ex in exerciseCatalog) {
+        final pr =
+            prescribe(exercise: ex, profile: profile, goal: TrainingGoal.masse);
+        expect(pr.bodyweight, isFalse, reason: '${ex.id} sans charge');
+        expect(pr.suggestedWeightKg, isNotNull, reason: '${ex.id} sans charge');
+      }
     });
 
     test('objectif force = charge plus lourde que masse', () {

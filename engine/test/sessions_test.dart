@@ -95,18 +95,14 @@ void main() {
       }
     });
 
-    test('au poids du corps seul, le programme se génère quand même', () {
+    test('sans aucun équipement, aucun exercice ne peut être proposé', () {
       final plan = generateWeeklyPlan(
         equipment: {},
         goal: TrainingGoal.endurance,
         daysPerWeek: 3,
       );
-      expect(plan.days.first.exercises, isNotEmpty);
-      // Tous les exercices ne demandent que le poids du corps.
       for (final d in plan.days) {
-        for (final pe in d.exercises) {
-          expect(pe.exercise.equipment, {Equipment.bodyweight});
-        }
+        expect(d.exercises, isEmpty);
       }
     });
   });

@@ -7,10 +7,10 @@ import 'package:mybody_rpg/state/app_state.dart';
 
 void main() {
   testWidgets('La séance affiche des exercices', (tester) async {
-    // Profil de test (sans équipement = poids du corps).
+    // Profil de test (salle complète).
     appState.onboarded = true;
     appState.pseudo = 'Test';
-    appState.equipment = {};
+    appState.equipment = Equipment.values.toSet();
     appState.goal = TrainingGoal.masse;
     appState.daysPerWeek = 3;
     appState.totalXp = 0;
@@ -32,8 +32,8 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final equipSets = <Set<Equipment>>[
-      {},
       {Equipment.dumbbells},
+      {Equipment.barbell, Equipment.flatBench, Equipment.squatRack},
       Equipment.values.toSet(),
     ];
     for (final eq in equipSets) {

@@ -8,15 +8,16 @@ void main() {
       expect(Equipment.values.length - 1, greaterThanOrEqualTo(18));
     });
 
-    test('aucun équipement coché = seulement le poids du corps', () {
-      final dispo = availableExercises({});
-      expect(dispo, isNotEmpty);
-      for (final ex in dispo) {
-        expect(ex.equipment, {Equipment.bodyweight});
+    test('aucun équipement coché = aucun exercice (tous nécessitent du matériel)',
+        () {
+      expect(availableExercises({}), isEmpty);
+    });
+
+    test('le catalogue ne contient plus d\'exercice au poids du corps', () {
+      for (final ex in exerciseCatalog) {
+        expect(ex.equipment.contains(Equipment.bodyweight), isFalse,
+            reason: '${ex.id} est au poids du corps');
       }
-      final ids = dispo.map((e) => e.id).toSet();
-      expect(ids, containsAll(['pushups', 'bodyweight_squat', 'plank']));
-      expect(ids, isNot(contains('bench_press')));
     });
 
     test('barre + banc plat = on débloque le développé couché', () {

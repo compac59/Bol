@@ -1,9 +1,6 @@
 import 'progression.dart' show MuscleGroup;
 
 /// Les types d'équipement qu'un joueur peut cocher dans son profil (~20).
-///
-/// [bodyweight] (poids du corps) est **toujours** disponible : pas besoin de
-/// le cocher, on l'ajoute automatiquement.
 enum Equipment {
   bodyweight('Poids du corps'),
   // Poids libres
@@ -52,7 +49,9 @@ class Exercise {
   final Set<Equipment> equipment;
 }
 
-/// Le catalogue complet (cf. bibliotheque-exercices.md).
+/// Le catalogue : uniquement des exercices **avec charge** (pas de poids du
+/// corps, qui n'aurait pas de charge à conseiller). Les défis quotidiens au
+/// poids du corps sont gérés à part (quests.dart).
 const List<Exercise> exerciseCatalog = [
   // --- Pectoraux ---
   Exercise(
@@ -97,20 +96,8 @@ const List<Exercise> exerciseCatalog = [
     group: MuscleGroup.pectoraux,
     equipment: {Equipment.cable},
   ),
-  Exercise(
-    id: 'pushups',
-    nom: 'Pompes',
-    group: MuscleGroup.pectoraux,
-    equipment: {Equipment.bodyweight},
-  ),
 
   // --- Dos ---
-  Exercise(
-    id: 'pullups',
-    nom: 'Tractions',
-    group: MuscleGroup.dos,
-    equipment: {Equipment.pullupBar},
-  ),
   Exercise(
     id: 'barbell_row',
     nom: 'Rowing barre',
@@ -153,12 +140,6 @@ const List<Exercise> exerciseCatalog = [
     group: MuscleGroup.dos,
     equipment: {Equipment.bands},
   ),
-  Exercise(
-    id: 'superman',
-    nom: 'Superman (lombaires)',
-    group: MuscleGroup.dos,
-    equipment: {Equipment.bodyweight},
-  ),
 
   // --- Épaules ---
   Exercise(
@@ -197,12 +178,6 @@ const List<Exercise> exerciseCatalog = [
     group: MuscleGroup.epaules,
     equipment: {Equipment.bands},
   ),
-  Exercise(
-    id: 'pike_pushups',
-    nom: 'Pompes piquées',
-    group: MuscleGroup.epaules,
-    equipment: {Equipment.bodyweight},
-  ),
 
   // --- Biceps ---
   Exercise(
@@ -238,12 +213,6 @@ const List<Exercise> exerciseCatalog = [
 
   // --- Triceps ---
   Exercise(
-    id: 'dips',
-    nom: 'Dips',
-    group: MuscleGroup.triceps,
-    equipment: {Equipment.dipStation},
-  ),
-  Exercise(
     id: 'pushdown',
     nom: 'Extension poulie',
     group: MuscleGroup.triceps,
@@ -260,12 +229,6 @@ const List<Exercise> exerciseCatalog = [
     nom: 'Extension haltère nuque',
     group: MuscleGroup.triceps,
     equipment: {Equipment.dumbbells},
-  ),
-  Exercise(
-    id: 'diamond_pushups',
-    nom: 'Pompes diamant',
-    group: MuscleGroup.triceps,
-    equipment: {Equipment.bodyweight},
   ),
 
   // --- Jambes ---
@@ -300,18 +263,6 @@ const List<Exercise> exerciseCatalog = [
     equipment: {Equipment.dumbbells},
   ),
   Exercise(
-    id: 'lunges',
-    nom: 'Fentes',
-    group: MuscleGroup.jambes,
-    equipment: {Equipment.bodyweight},
-  ),
-  Exercise(
-    id: 'bodyweight_squat',
-    nom: 'Squat au poids du corps',
-    group: MuscleGroup.jambes,
-    equipment: {Equipment.bodyweight},
-  ),
-  Exercise(
     id: 'leg_extension',
     nom: 'Leg extension',
     group: MuscleGroup.jambes,
@@ -330,36 +281,12 @@ const List<Exercise> exerciseCatalog = [
     equipment: {Equipment.calfMachine},
   ),
 
-  // --- Abdos / gainage ---
-  Exercise(
-    id: 'crunch',
-    nom: 'Crunch',
-    group: MuscleGroup.abdos,
-    equipment: {Equipment.bodyweight},
-  ),
-  Exercise(
-    id: 'leg_raise',
-    nom: 'Relevé de jambes',
-    group: MuscleGroup.abdos,
-    equipment: {Equipment.bodyweight},
-  ),
-  Exercise(
-    id: 'hanging_leg_raise',
-    nom: 'Relevé de jambes suspendu',
-    group: MuscleGroup.abdos,
-    equipment: {Equipment.pullupBar},
-  ),
+  // --- Abdos ---
   Exercise(
     id: 'cable_crunch',
     nom: 'Crunch à la poulie',
     group: MuscleGroup.abdos,
     equipment: {Equipment.cable},
-  ),
-  Exercise(
-    id: 'plank',
-    nom: 'Gainage (planche)',
-    group: MuscleGroup.abdos,
-    equipment: {Equipment.bodyweight},
   ),
 ];
 
@@ -367,12 +294,11 @@ const List<Exercise> exerciseCatalog = [
 /// Tout le reste est considéré poly-articulaire (compound).
 const Set<String> isolationExerciseIds = {
   'pec_deck', 'cable_fly',
-  'superman',
   'lateral_raise', 'face_pull', 'band_pull_apart',
   'barbell_curl', 'ez_curl', 'db_curl', 'hammer_curl', 'cable_curl',
   'pushdown', 'skull_crusher', 'db_overhead_ext',
   'leg_extension', 'leg_curl', 'calf_raise',
-  'crunch', 'leg_raise', 'hanging_leg_raise', 'cable_crunch', 'plank',
+  'cable_crunch',
 };
 
 extension ExerciseKind on Exercise {
@@ -383,8 +309,7 @@ extension ExerciseKind on Exercise {
   /// basée sur l'identifiant. Les fichiers seront ajoutés côté app Flutter.
   String get imageAsset => 'assets/exercises/$id.gif';
 
-  /// Lien vidéo « technique » qui fonctionne dès maintenant (recherche YouTube),
-  /// en attendant d'éventuelles vidéos intégrées.
+  /// Lien vidéo « technique » qui fonctionne dès maintenant (recherche YouTube).
   String get videoSearchUrl {
     final q = Uri.encodeComponent('$nom musculation technique exécution');
     return 'https://www.youtube.com/results?search_query=$q';
@@ -392,12 +317,9 @@ extension ExerciseKind on Exercise {
 }
 
 /// Retourne les exercices réalisables avec l'équipement disponible.
-///
-/// Le poids du corps est toujours ajouté : on n'a jamais besoin de le cocher.
 List<Exercise> availableExercises(Set<Equipment> available) {
-  final dispo = {...available, Equipment.bodyweight};
   return exerciseCatalog
-      .where((ex) => ex.equipment.every(dispo.contains))
+      .where((ex) => ex.equipment.every(available.contains))
       .toList();
 }
 
