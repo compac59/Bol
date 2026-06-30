@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:mybody_rpg_engine/mybody_rpg_engine.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-/// État global de l'app (en mémoire pour cette première version).
+/// État global de l'app, avec sauvegarde locale (shared_preferences).
 ///
 /// Branche l'UI sur le moteur de jeu : profil, XP/niveau, rang, stats,
 /// streak et défis du jour.
 class AppState extends ChangeNotifier {
+  static const _key = 'mybody_rpg_save_v1';
+  SharedPreferences? _prefs;
+
   bool onboarded = false;
 
   String pseudo = '';
@@ -25,8 +31,9 @@ class AppState extends ChangeNotifier {
   );
   StreakState streak = const StreakState();
 
-  /// Défis du jour déjà complétés (par identifiant).
-  final Set<String> _questsDone = {};
+  /// Défis du jour déjà complétés (par identifiant), et le jour concerné.
+  Set<String> _questsDone = {};
+  int _questsDoneDay = -1;
 
   // --- Valeurs dérivées ---
   LevelProgress get progress => levelFromTotalXp(totalXp);
@@ -37,12 +44,115 @@ class AppState extends ChangeNotifier {
   List<DailyQuest> get dailyQuests =>
       dailyQuestsForDay(rank: currentRank, daySeed: today);
 
-  bool isQuestDone(DailyQuest q) => _questsDone.contains(q.template.id);
+  bool isQuestDone(DailyQuest q) =>
+      _questsDoneDay == today && _questsDone.contains(q.template.id);
 
   bool promotionUnlocked() =>
       promotionAvailable(currentRank: currentRank, level: level);
 
-  /// Finalise l'onboarding et calcule le point de départ via le test de force.
+  WeeklyPlan get weeklyPlan => generateWeeklyPlan(
+        equipment: equipment,
+        goal: goal,
+        daysPerWeek: daysPerWeek,
+      );
+
+  WorkoutDay get todaysWorkout {
+    final days = weeklyPlan.days;
+    return days[today % days.length];
+  }
+
+  // --- Chargement / sauvegarde ---
+  Future<void> load() async {
+    _prefs = await SharedPreferences.getInstance();
+    final raw = _prefs?.getString(_key);
+    if (raw == null) return;
+    try {
+      _fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      // sauvegarde corrompue : on repart proprement
+    }
+    notifyListeners();
+  }
+
+  Future<void> _save() async {
+    await _prefs?.setString(_key, jsonEncode(_toJson()));
+  }
+
+  /// Efface la sauvegarde et réinitialise (pour repartir de zéro).
+  Future<void> reset() async {
+    await _prefs?.remove(_key);
+    onboarded = false;
+    totalXp = 0;
+    currentRank = Rank.e;
+    equipment = {};
+    streak = const StreakState();
+    _questsDone = {};
+    _questsDoneDay = -1;
+    notifyListeners();
+  }
+
+  Map<String, dynamic> _toJson() => {
+        'onboarded': onboarded,
+        'pseudo': pseudo,
+        'bodyWeight': bodyWeight,
+        'goal': goal.name,
+        'equipment': equipment.map((e) => e.name).toList(),
+        'daysPerWeek': daysPerWeek,
+        'totalXp': totalXp,
+        'currentRank': currentRank.name,
+        'stats': {
+          'force': stats.force,
+          'endurance': stats.endurance,
+          'explosivite': stats.explosivite,
+          'volonte': stats.volonte,
+          'vitalite': stats.vitalite,
+        },
+        'streak': {
+          'current': streak.current,
+          'best': streak.best,
+          'lastActiveDay': streak.lastActiveDay,
+          'freezesRemaining': streak.freezesRemaining,
+        },
+        'questsDone': _questsDone.toList(),
+        'questsDoneDay': _questsDoneDay,
+      };
+
+  void _fromJson(Map<String, dynamic> j) {
+    onboarded = j['onboarded'] as bool? ?? false;
+    pseudo = j['pseudo'] as String? ?? '';
+    bodyWeight = (j['bodyWeight'] as num?)?.toDouble() ?? 75;
+    goal = TrainingGoal.values.byName(j['goal'] as String? ?? 'masse');
+    equipment = ((j['equipment'] as List?) ?? [])
+        .map((e) => Equipment.values.byName(e as String))
+        .toSet();
+    daysPerWeek = j['daysPerWeek'] as int? ?? 3;
+    totalXp = j['totalXp'] as int? ?? 0;
+    currentRank = Rank.values.byName(j['currentRank'] as String? ?? 'e');
+    final st = j['stats'] as Map<String, dynamic>?;
+    if (st != null) {
+      stats = CharacterStats(
+        force: st['force'] as int? ?? 10,
+        endurance: st['endurance'] as int? ?? 10,
+        explosivite: st['explosivite'] as int? ?? 10,
+        volonte: st['volonte'] as int? ?? 10,
+        vitalite: st['vitalite'] as int? ?? 10,
+      );
+    }
+    final sk = j['streak'] as Map<String, dynamic>?;
+    if (sk != null) {
+      streak = StreakState(
+        current: sk['current'] as int? ?? 0,
+        best: sk['best'] as int? ?? 0,
+        lastActiveDay: sk['lastActiveDay'] as int?,
+        freezesRemaining: sk['freezesRemaining'] as int? ?? 2,
+      );
+    }
+    _questsDone =
+        ((j['questsDone'] as List?) ?? []).map((e) => e as String).toSet();
+    _questsDoneDay = j['questsDoneDay'] as int? ?? -1;
+  }
+
+  // --- Actions ---
   void completeOnboarding({
     required String pseudo,
     required double bodyWeight,
@@ -68,38 +178,29 @@ class AppState extends ChangeNotifier {
     }
 
     onboarded = true;
+    _save();
     notifyListeners();
-  }
-
-  /// Programme hebdomadaire généré pour le profil.
-  WeeklyPlan get weeklyPlan => generateWeeklyPlan(
-        equipment: equipment,
-        goal: goal,
-        daysPerWeek: daysPerWeek,
-      );
-
-  /// La séance du jour (tourne selon le jour).
-  WorkoutDay get todaysWorkout {
-    final days = weeklyPlan.days;
-    return days[today % days.length];
   }
 
   void _registerActivity() {
     streak = registerActivity(streak, today).state;
   }
 
-  /// Ajoute de l'XP et compte une activité du jour.
   void gainXp(int amount, {bool activity = true}) {
     totalXp += amount;
     if (activity) _registerActivity();
+    _save();
     notifyListeners();
   }
 
-  /// Marque un défi comme complété (rapporte son XP, une seule fois).
   void completeQuest(DailyQuest q) {
+    if (_questsDoneDay != today) {
+      _questsDone = {};
+      _questsDoneDay = today;
+    }
     if (_questsDone.contains(q.template.id)) return;
     _questsDone.add(q.template.id);
-    gainXp(q.xpReward);
+    gainXp(q.xpReward); // sauvegarde incluse
   }
 }
 

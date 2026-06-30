@@ -39,6 +39,9 @@ dependencies:
   mybody_rpg_engine:
     path: ../engine
 
+  # Sauvegarde locale (profil, XP, streak) — fonctionne aussi sur le web.
+  shared_preferences: ^2.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

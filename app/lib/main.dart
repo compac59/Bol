@@ -5,7 +5,11 @@ import 'screens/onboarding_screen.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
 
-void main() => runApp(const MyBodyRpgApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await appState.load();
+  runApp(const MyBodyRpgApp());
+}
 
 class MyBodyRpgApp extends StatelessWidget {
   const MyBodyRpgApp({super.key});
