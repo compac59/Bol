@@ -33,6 +33,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 ? '0'
                 : ''),
     ];
+    // Force un second rendu après la première frame : corrige le cas où
+    // la liste reste blanche au chargement de l'écran sur Flutter web.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -95,21 +100,23 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final exercises = _day.exercises;
     return Scaffold(
-      appBar: AppBar(title: Text(_day.nom)),
-      body: Column(
-        children: [
-          LinearProgressIndicator(value: _session.progress, minHeight: 6),
-          Expanded(
-            child: ListView.builder(
+      appBar: AppBar(
+        title: Text(_day.nom),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(6),
+          child: LinearProgressIndicator(value: _session.progress, minHeight: 6),
+        ),
+      ),
+      bottomNavigationBar: _restRemaining > 0 ? _restBar() : null,
+      body: exercises.isEmpty
+          ? const Center(child: Text('Aucun exercice pour cette séance.'))
+          : ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: _day.exercises.length,
+              itemCount: exercises.length,
               itemBuilder: (context, i) => _exerciseCard(i),
             ),
-          ),
-          if (_restRemaining > 0) _restBar(),
-        ],
-      ),
     );
   }
 
@@ -130,10 +137,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 Expanded(
                   child: Text(
                     pe.exercise.nom,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: complete ? Colors.greenAccent : null,
                         ),
                   ),
@@ -165,7 +169,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 Text('Séries : $done / ${pe.sets}'),
                 const Spacer(),
                 FilledButton(
-                  onPressed: (complete || !isCurrent) ? null : () => _validate(i),
+                  onPressed:
+                      (complete || !isCurrent) ? null : () => _validate(i),
                   child: const Text('Valider'),
                 ),
               ],
@@ -177,18 +182,20 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   Widget _restBar() {
-    return Container(
-      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          const Icon(Icons.timer),
-          const SizedBox(width: 12),
-          Text('Repos : $_restRemaining s',
-              style: Theme.of(context).textTheme.titleMedium),
-          const Spacer(),
-          TextButton(onPressed: _skipRest, child: const Text('Passer')),
-        ],
+    return SafeArea(
+      child: Container(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const Icon(Icons.timer),
+            const SizedBox(width: 12),
+            Text('Repos : $_restRemaining s',
+                style: Theme.of(context).textTheme.titleMedium),
+            const Spacer(),
+            TextButton(onPressed: _skipRest, child: const Text('Passer')),
+          ],
+        ),
       ),
     );
   }
