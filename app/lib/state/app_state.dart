@@ -31,6 +31,19 @@ class AppState extends ChangeNotifier {
   );
   StreakState streak = const StreakState();
 
+  /// Profil de force estimé (pour conseiller les charges).
+  StrengthProfile profile = const StrengthProfile(
+    bench: 40,
+    squat: 60,
+    deadlift: 80,
+    overhead: 28,
+    pull: 60,
+  );
+
+  /// Consigne (charge + reps) conseillée pour un exercice.
+  ExercisePrescription prescriptionFor(Exercise ex) =>
+      prescribe(exercise: ex, profile: profile, goal: goal);
+
   /// Défis du jour déjà complétés (par identifiant), et le jour concerné.
   Set<String> _questsDone = {};
   int _questsDoneDay = -1;
@@ -115,6 +128,13 @@ class AppState extends ChangeNotifier {
         },
         'questsDone': _questsDone.toList(),
         'questsDoneDay': _questsDoneDay,
+        'profile': {
+          'bench': profile.bench,
+          'squat': profile.squat,
+          'deadlift': profile.deadlift,
+          'overhead': profile.overhead,
+          'pull': profile.pull,
+        },
       };
 
   void _fromJson(Map<String, dynamic> j) {
@@ -150,6 +170,19 @@ class AppState extends ChangeNotifier {
     _questsDone =
         ((j['questsDone'] as List?) ?? []).map((e) => e as String).toSet();
     _questsDoneDay = j['questsDoneDay'] as int? ?? -1;
+    final pf = j['profile'] as Map<String, dynamic>?;
+    if (pf != null) {
+      profile = StrengthProfile(
+        bench: (pf['bench'] as num).toDouble(),
+        squat: (pf['squat'] as num).toDouble(),
+        deadlift: (pf['deadlift'] as num).toDouble(),
+        overhead: (pf['overhead'] as num).toDouble(),
+        pull: (pf['pull'] as num).toDouble(),
+      );
+    } else {
+      profile =
+          strengthProfileFromTest(entries: const [], bodyWeightKg: bodyWeight);
+    }
   }
 
   // --- Actions ---
@@ -176,6 +209,8 @@ class AppState extends ChangeNotifier {
       currentRank = Rank.e;
       totalXp = 0;
     }
+    profile =
+        strengthProfileFromTest(entries: testEntries, bodyWeightKg: bodyWeight);
 
     onboarded = true;
     _save();

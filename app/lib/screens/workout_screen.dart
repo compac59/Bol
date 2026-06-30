@@ -16,6 +16,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   late final WorkoutDay _day;
   late final WorkoutSession _session;
   late final List<TextEditingController> _weights;
+  late final List<ExercisePrescription> _presc;
 
   // Minuteur de repos.
   Timer? _timer;
@@ -26,12 +27,16 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     super.initState();
     _day = appState.todaysWorkout;
     _session = WorkoutSession(_day);
+    _presc = [
+      for (final pe in _day.exercises) appState.prescriptionFor(pe.exercise),
+    ];
     _weights = [
-      for (final e in _day.exercises)
+      for (final pr in _presc)
         TextEditingController(
-            text: e.exercise.equipment.contains(Equipment.bodyweight)
-                ? '0'
-                : ''),
+          text: pr.bodyweight
+              ? '0'
+              : (pr.suggestedWeightKg ?? 0).toStringAsFixed(0),
+        ),
     ];
     // Force un second rendu après la première frame : corrige le cas où
     // la liste reste blanche au chargement de l'écran sur Flutter web.
@@ -149,8 +154,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 ),
               ],
             ),
-            Text('${pe.sets} séries × ${pe.minReps}-${pe.maxReps} reps · '
-                'repos ${pe.restSeconds}s'),
+            Text('Objectif : ${pe.sets} séries × ${_presc[i].targetReps} reps '
+                '· repos ${pe.restSeconds}s'),
+            Text(
+              _presc[i].bodyweight
+                  ? '💡 Au poids du corps'
+                  : '💡 Charge conseillée : ${_presc[i].suggestedWeightKg!.toStringAsFixed(0)} kg',
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
