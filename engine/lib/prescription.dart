@@ -167,8 +167,10 @@ ExercisePrescription prescribe({
   final coef = _exerciseCoef[exercise.id] ?? (RefLift.bench, 0.30);
   final oneRm = profile.of(coef.$1) * coef.$2;
 
-  // Charge pour `targetReps` reps ≈ 1RM / (1 + reps/30) (Epley inversé).
-  final raw = oneRm / (1 + targetReps / 30);
+  // Charge de DÉPART en gardant ~2 reps en réserve (RIR) : on calcule comme si
+  // on visait quelques reps de plus, pour ne pas démarrer à l'échec.
+  const rir = 2;
+  final raw = oneRm / (1 + (targetReps + rir) / 30);
   final step = weightIncrementKg(exercise.group); // 2 kg bras, 5 kg gros groupes
   final weight = _roundTo(raw, step);
 

@@ -32,21 +32,25 @@ enum MuscleGroup {
   abdos,
 }
 
-/// De combien on augmente le poids quand un palier est débloqué, selon le
-/// groupe musculaire (choix produit) :
-/// - bras (biceps/triceps) et épaules : +2 kg (petits muscles) ;
-/// - pecs, dos, jambes : +5 kg (gros groupes).
+/// De combien on augmente le poids quand un palier est débloqué.
+///
+/// Basé sur les preuves (incréments fixes ~2-5 %, plus petits pour le haut
+/// du corps) :
+/// - bas du corps (jambes) : +5 kg ;
+/// - haut du corps poly-articulaire (pecs, dos) : +2,5 kg ;
+/// - petits muscles / isolation (épaules, bras, abdos) : +2 kg.
 double weightIncrementKg(MuscleGroup group) {
   switch (group) {
-    case MuscleGroup.biceps:
-    case MuscleGroup.triceps:
-    case MuscleGroup.epaules:
-    case MuscleGroup.abdos:
-      return 2;
-    case MuscleGroup.pectoraux:
-    case MuscleGroup.dos:
     case MuscleGroup.jambes:
       return 5;
+    case MuscleGroup.pectoraux:
+    case MuscleGroup.dos:
+      return 2.5;
+    case MuscleGroup.epaules:
+    case MuscleGroup.biceps:
+    case MuscleGroup.triceps:
+    case MuscleGroup.abdos:
+      return 2;
   }
 }
 

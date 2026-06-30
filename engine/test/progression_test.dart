@@ -18,9 +18,9 @@ void main() {
       expect(weightIncrementKg(MuscleGroup.biceps), 2);
       expect(weightIncrementKg(MuscleGroup.triceps), 2);
     });
-    test('pecs / dos / jambes = +5 kg', () {
-      expect(weightIncrementKg(MuscleGroup.pectoraux), 5);
-      expect(weightIncrementKg(MuscleGroup.dos), 5);
+    test('haut du corps +2,5 kg, jambes +5 kg', () {
+      expect(weightIncrementKg(MuscleGroup.pectoraux), 2.5);
+      expect(weightIncrementKg(MuscleGroup.dos), 2.5);
       expect(weightIncrementKg(MuscleGroup.jambes), 5);
     });
   });
@@ -47,7 +47,7 @@ void main() {
       );
       expect(r.outcome, ProgressOutcome.weightUp);
       expect(r.isMilestone, isTrue);
-      expect(r.next.weightKg, 65);
+      expect(r.next.weightKg, 62.5); // pecs : +2,5 kg
       expect(r.next.targetReps, 8); // retour au bas de la fourchette
     });
 

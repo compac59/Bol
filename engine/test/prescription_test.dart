@@ -37,15 +37,15 @@ void main() {
       ],
     );
 
-    test('développé couché, objectif masse (8 reps)', () {
+    test('développé couché, objectif masse (8 reps, ~2 RIR)', () {
       final pr = prescribe(
         exercise: byId('bench_press'),
         profile: profile,
         goal: TrainingGoal.masse,
       );
-      // 1RM 80 -> 80/(1+8/30)=63.2 -> arrondi 5 -> 65
+      // 1RM 80, viser 8 reps + 2 RIR = 10 -> 80/(1+10/30)=60 -> arrondi 2,5 -> 60
       expect(pr.bodyweight, isFalse);
-      expect(pr.suggestedWeightKg, 65);
+      expect(pr.suggestedWeightKg, 60);
       expect(pr.targetReps, 8);
     });
 
