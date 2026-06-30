@@ -30,12 +30,15 @@ class HomeScreen extends StatelessWidget {
               ],
               _QuestsCard(state: s),
               const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const WorkoutScreen()),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const WorkoutScreen()),
+                  ),
+                  icon: const Icon(Icons.fitness_center),
+                  label: Text('Démarrer la séance — ${s.todaysWorkout.nom}'),
                 ),
-                icon: const Icon(Icons.fitness_center),
-                label: Text('Démarrer la séance — ${s.todaysWorkout.nom}'),
               ),
               const SizedBox(height: 24),
             ],

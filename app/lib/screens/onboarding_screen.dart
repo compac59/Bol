@@ -141,9 +141,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           _testField(_ohp, 'Développé militaire — max (kg)'),
           _testField(_pullups, 'Tractions — reps max'),
           const SizedBox(height: 24),
-          FilledButton(
-            onPressed: _create,
-            child: const Text('Créer mon chasseur'),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _create,
+              child: const Text('Créer mon chasseur'),
+            ),
           ),
           const SizedBox(height: 24),
         ],

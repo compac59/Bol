@@ -19,7 +19,9 @@ ThemeData buildTheme() {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        minimumSize: const Size.fromHeight(48),
+        // Hauteur min confortable, mais largeur FINIE : un minimumSize à
+        // largeur infinie casse les boutons placés dans une Row.
+        minimumSize: const Size(64, 48),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
