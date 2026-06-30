@@ -154,6 +154,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 ),
               ],
             ),
+            Text('🎯 Muscle : ${pe.exercise.primaryMuscle}',
+                style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 4),
             Text('Objectif : ${pe.sets} séries × ${_presc[i].targetReps} reps '
                 '· repos ${pe.restSeconds}s'),
             Text(

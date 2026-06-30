@@ -38,12 +38,18 @@ class Exercise {
     required this.id,
     required this.nom,
     required this.group,
+    required this.primaryMuscle,
     required this.equipment,
   });
 
   final String id;
   final String nom;
+
+  /// Groupe musculaire large (pour la structure des séances).
   final MuscleGroup group;
+
+  /// Muscle principal ciblé (libellé précis affiché au joueur).
+  final String primaryMuscle;
 
   /// L'équipement **nécessaire** pour faire l'exercice (tout est requis).
   final Set<Equipment> equipment;
@@ -58,42 +64,49 @@ const List<Exercise> exerciseCatalog = [
     id: 'bench_press',
     nom: 'Développé couché',
     group: MuscleGroup.pectoraux,
+    primaryMuscle: 'Pectoraux',
     equipment: {Equipment.barbell, Equipment.flatBench},
   ),
   Exercise(
     id: 'incline_press',
     nom: 'Développé incliné',
     group: MuscleGroup.pectoraux,
+    primaryMuscle: 'Haut des pectoraux',
     equipment: {Equipment.barbell, Equipment.inclineBench},
   ),
   Exercise(
     id: 'db_press',
     nom: 'Développé haltères',
     group: MuscleGroup.pectoraux,
+    primaryMuscle: 'Pectoraux',
     equipment: {Equipment.dumbbells, Equipment.flatBench},
   ),
   Exercise(
     id: 'db_incline_press',
     nom: 'Développé incliné haltères',
     group: MuscleGroup.pectoraux,
+    primaryMuscle: 'Haut des pectoraux',
     equipment: {Equipment.dumbbells, Equipment.inclineBench},
   ),
   Exercise(
     id: 'chest_press_machine',
     nom: 'Presse à pectoraux',
     group: MuscleGroup.pectoraux,
+    primaryMuscle: 'Pectoraux',
     equipment: {Equipment.chestPress},
   ),
   Exercise(
     id: 'pec_deck',
     nom: 'Écarté (pec deck)',
     group: MuscleGroup.pectoraux,
+    primaryMuscle: 'Pectoraux',
     equipment: {Equipment.pecDeck},
   ),
   Exercise(
     id: 'cable_fly',
     nom: 'Écarté à la poulie',
     group: MuscleGroup.pectoraux,
+    primaryMuscle: 'Pectoraux',
     equipment: {Equipment.cable},
   ),
 
@@ -102,42 +115,49 @@ const List<Exercise> exerciseCatalog = [
     id: 'barbell_row',
     nom: 'Rowing barre',
     group: MuscleGroup.dos,
+    primaryMuscle: 'Grand dorsal',
     equipment: {Equipment.barbell},
   ),
   Exercise(
     id: 'db_row',
     nom: 'Rowing haltère',
     group: MuscleGroup.dos,
+    primaryMuscle: 'Grand dorsal',
     equipment: {Equipment.dumbbells, Equipment.flatBench},
   ),
   Exercise(
     id: 'lat_pulldown',
     nom: 'Tirage vertical',
     group: MuscleGroup.dos,
+    primaryMuscle: 'Grand dorsal',
     equipment: {Equipment.latPulldown},
   ),
   Exercise(
     id: 'seated_row',
     nom: 'Rowing assis',
     group: MuscleGroup.dos,
+    primaryMuscle: 'Dos (rhomboïdes)',
     equipment: {Equipment.seatedRow},
   ),
   Exercise(
     id: 'deadlift',
     nom: 'Soulevé de terre',
     group: MuscleGroup.dos,
+    primaryMuscle: 'Chaîne postérieure',
     equipment: {Equipment.barbell},
   ),
   Exercise(
     id: 'kb_swing',
     nom: 'Swing kettlebell',
     group: MuscleGroup.dos,
+    primaryMuscle: 'Fessiers / ischio-jambiers',
     equipment: {Equipment.kettlebell},
   ),
   Exercise(
     id: 'band_row',
     nom: 'Tirage élastique',
     group: MuscleGroup.dos,
+    primaryMuscle: 'Grand dorsal',
     equipment: {Equipment.bands},
   ),
 
@@ -146,36 +166,42 @@ const List<Exercise> exerciseCatalog = [
     id: 'ohp',
     nom: 'Développé militaire',
     group: MuscleGroup.epaules,
+    primaryMuscle: 'Deltoïde antérieur',
     equipment: {Equipment.barbell},
   ),
   Exercise(
     id: 'db_shoulder_press',
     nom: 'Développé haltères épaules',
     group: MuscleGroup.epaules,
+    primaryMuscle: 'Deltoïdes',
     equipment: {Equipment.dumbbells},
   ),
   Exercise(
     id: 'shoulder_press_machine',
     nom: 'Développé épaules machine',
     group: MuscleGroup.epaules,
+    primaryMuscle: 'Deltoïdes',
     equipment: {Equipment.shoulderPress},
   ),
   Exercise(
     id: 'lateral_raise',
     nom: 'Élévations latérales',
     group: MuscleGroup.epaules,
+    primaryMuscle: 'Deltoïde latéral',
     equipment: {Equipment.dumbbells},
   ),
   Exercise(
     id: 'face_pull',
     nom: 'Face pull (poulie)',
     group: MuscleGroup.epaules,
+    primaryMuscle: 'Deltoïde postérieur',
     equipment: {Equipment.cable},
   ),
   Exercise(
     id: 'band_pull_apart',
     nom: 'Écarté élastique',
     group: MuscleGroup.epaules,
+    primaryMuscle: 'Deltoïde postérieur',
     equipment: {Equipment.bands},
   ),
 
@@ -184,30 +210,35 @@ const List<Exercise> exerciseCatalog = [
     id: 'barbell_curl',
     nom: 'Curl barre',
     group: MuscleGroup.biceps,
+    primaryMuscle: 'Biceps',
     equipment: {Equipment.barbell},
   ),
   Exercise(
     id: 'ez_curl',
     nom: 'Curl barre EZ',
     group: MuscleGroup.biceps,
+    primaryMuscle: 'Biceps',
     equipment: {Equipment.ezBar},
   ),
   Exercise(
     id: 'db_curl',
     nom: 'Curl haltères',
     group: MuscleGroup.biceps,
+    primaryMuscle: 'Biceps',
     equipment: {Equipment.dumbbells},
   ),
   Exercise(
     id: 'hammer_curl',
     nom: 'Curl marteau',
     group: MuscleGroup.biceps,
+    primaryMuscle: 'Biceps / brachial',
     equipment: {Equipment.dumbbells},
   ),
   Exercise(
     id: 'cable_curl',
     nom: 'Curl à la poulie',
     group: MuscleGroup.biceps,
+    primaryMuscle: 'Biceps',
     equipment: {Equipment.cable},
   ),
 
@@ -216,18 +247,21 @@ const List<Exercise> exerciseCatalog = [
     id: 'pushdown',
     nom: 'Extension poulie',
     group: MuscleGroup.triceps,
+    primaryMuscle: 'Triceps',
     equipment: {Equipment.cable},
   ),
   Exercise(
     id: 'skull_crusher',
     nom: 'Barre au front',
     group: MuscleGroup.triceps,
+    primaryMuscle: 'Triceps',
     equipment: {Equipment.ezBar, Equipment.flatBench},
   ),
   Exercise(
     id: 'db_overhead_ext',
     nom: 'Extension haltère nuque',
     group: MuscleGroup.triceps,
+    primaryMuscle: 'Triceps (longue portion)',
     equipment: {Equipment.dumbbells},
   ),
 
@@ -236,48 +270,56 @@ const List<Exercise> exerciseCatalog = [
     id: 'squat',
     nom: 'Squat',
     group: MuscleGroup.jambes,
+    primaryMuscle: 'Quadriceps',
     equipment: {Equipment.barbell, Equipment.squatRack},
   ),
   Exercise(
     id: 'smith_squat',
     nom: 'Squat à la Smith',
     group: MuscleGroup.jambes,
+    primaryMuscle: 'Quadriceps',
     equipment: {Equipment.smithMachine},
   ),
   Exercise(
     id: 'leg_press',
     nom: 'Presse à cuisses',
     group: MuscleGroup.jambes,
+    primaryMuscle: 'Quadriceps',
     equipment: {Equipment.legPress},
   ),
   Exercise(
     id: 'goblet_squat',
     nom: 'Goblet squat',
     group: MuscleGroup.jambes,
+    primaryMuscle: 'Quadriceps',
     equipment: {Equipment.kettlebell},
   ),
   Exercise(
     id: 'db_lunges',
     nom: 'Fentes haltères',
     group: MuscleGroup.jambes,
+    primaryMuscle: 'Quadriceps / fessiers',
     equipment: {Equipment.dumbbells},
   ),
   Exercise(
     id: 'leg_extension',
     nom: 'Leg extension',
     group: MuscleGroup.jambes,
+    primaryMuscle: 'Quadriceps',
     equipment: {Equipment.legExtension},
   ),
   Exercise(
     id: 'leg_curl',
     nom: 'Leg curl',
     group: MuscleGroup.jambes,
+    primaryMuscle: 'Ischio-jambiers',
     equipment: {Equipment.legCurl},
   ),
   Exercise(
     id: 'calf_raise',
     nom: 'Mollets debout',
     group: MuscleGroup.jambes,
+    primaryMuscle: 'Mollets',
     equipment: {Equipment.calfMachine},
   ),
 
@@ -286,6 +328,7 @@ const List<Exercise> exerciseCatalog = [
     id: 'cable_crunch',
     nom: 'Crunch à la poulie',
     group: MuscleGroup.abdos,
+    primaryMuscle: 'Abdominaux',
     equipment: {Equipment.cable},
   ),
 ];

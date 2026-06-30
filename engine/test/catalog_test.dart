@@ -62,5 +62,11 @@ void main() {
       final ids = exerciseCatalog.map((e) => e.id).toList();
       expect(ids.toSet().length, ids.length);
     });
+
+    test('chaque exercice a un muscle principal renseigné', () {
+      for (final ex in exerciseCatalog) {
+        expect(ex.primaryMuscle.trim(), isNotEmpty, reason: ex.id);
+      }
+    });
   });
 }
