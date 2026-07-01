@@ -42,6 +42,9 @@ dependencies:
   # Sauvegarde locale (profil, XP, streak) — fonctionne aussi sur le web.
   shared_preferences: ^2.3.0
 
+  # Atlas musculaire (silhouette anatomique avec surbrillance des muscles).
+  flutter_body_atlas: ^0.1.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
