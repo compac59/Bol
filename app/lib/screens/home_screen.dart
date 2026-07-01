@@ -33,9 +33,7 @@ class HomeScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const WorkoutScreen()),
-                  ),
+                  onPressed: () => _chooseDurationAndStart(context),
                   icon: const Icon(Icons.fitness_center),
                   label: Text('Démarrer la séance — ${s.todaysWorkout.nom}'),
                 ),
@@ -45,6 +43,40 @@ class HomeScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Future<void> _chooseDurationAndStart(BuildContext context) async {
+    const durations = [30, 45, 60, 90];
+    final chosen = await showModalBottomSheet<int>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('Durée de la séance ?',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            for (final m in durations)
+              ListTile(
+                leading: const Icon(Icons.timer_outlined),
+                title: Text('$m minutes'),
+                subtitle: Text(
+                    '~${appState.workoutForDuration(m).exercises.length} exercices'),
+                onTap: () => Navigator.of(ctx).pop(m),
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+    if (chosen == null || !context.mounted) return;
+    appState.setSessionMinutes(chosen);
+    final day = appState.workoutForDuration(chosen);
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => WorkoutScreen(day: day)),
     );
   }
 }

@@ -188,6 +188,39 @@ List<Exercise> _pick(
   return result;
 }
 
+/// Durée estimée d'un exercice (secondes) : séries de travail + repos entre
+/// elles + un temps de mise en place/transition.
+int estimatedExerciseSeconds(PlannedExercise pe) {
+  const workPerSet = 40; // secondes par série
+  const setup = 60; // installation / transition entre exercices
+  return pe.sets * workPerSet + (pe.sets - 1) * pe.restSeconds + setup;
+}
+
+/// Durée totale estimée d'une séance, en minutes.
+int estimatedDurationMinutes(WorkoutDay day) {
+  final s = day.exercises.fold<int>(0, (a, e) => a + estimatedExerciseSeconds(e));
+  return (s / 60).round();
+}
+
+/// Raccourcit une séance pour tenir dans [targetMinutes] : garde les exercices
+/// dans l'ordre (poly-articulaires d'abord) tant qu'on ne dépasse pas la durée.
+/// Conserve toujours au moins un exercice.
+WorkoutDay trimToDuration(WorkoutDay day, int targetMinutes) {
+  final target = targetMinutes * 60;
+  final kept = <PlannedExercise>[];
+  var acc = 0;
+  for (final e in day.exercises) {
+    final t = estimatedExerciseSeconds(e);
+    if (kept.isEmpty || acc + t <= target) {
+      kept.add(e);
+      acc += t;
+    } else {
+      break;
+    }
+  }
+  return WorkoutDay(nom: day.nom, exercises: kept);
+}
+
 /// Génère un programme hebdomadaire adapté à l'équipement et à l'objectif.
 ///
 /// - [equipment] : matériel coché dans le profil.

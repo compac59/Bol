@@ -7,7 +7,10 @@ import '../state/app_state.dart';
 import '../widgets/body_map.dart';
 
 class WorkoutScreen extends StatefulWidget {
-  const WorkoutScreen({super.key});
+  const WorkoutScreen({super.key, required this.day});
+
+  /// La séance à réaliser (déjà adaptée à la durée choisie).
+  final WorkoutDay day;
 
   @override
   State<WorkoutScreen> createState() => _WorkoutScreenState();
@@ -26,7 +29,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   @override
   void initState() {
     super.initState();
-    _day = appState.todaysWorkout;
+    _day = widget.day;
     _session = WorkoutSession(_day);
     _presc = [
       for (final pe in _day.exercises) appState.prescriptionFor(pe.exercise),
@@ -112,7 +115,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         title: Text(_day.nom),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(6),
-          child: LinearProgressIndicator(value: _session.progress, minHeight: 6),
+          child:
+              LinearProgressIndicator(value: _session.progress, minHeight: 6),
         ),
       ),
       bottomNavigationBar: _restRemaining > 0 ? _restBar() : null,
@@ -121,27 +125,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                _muscleMapCard(),
                 for (var i = 0; i < exercises.length; i++) _exerciseCard(i),
               ],
             ),
-    );
-  }
-
-  Widget _muscleMapCard() {
-    final worked = {for (final pe in _day.exercises) pe.exercise.group};
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text('Muscles travaillés aujourd\'hui',
-                style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            BodyMap(worked: worked),
-          ],
-        ),
-      ),
     );
   }
 
@@ -154,60 +140,73 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    pe.exercise.nom,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: complete ? Colors.greenAccent : null,
+            MuscleThumbnail(group: pe.exercise.group),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          pe.exercise.nom,
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: complete ? Colors.greenAccent : null,
+                                  ),
                         ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.ondemand_video),
+                        tooltip: 'Voir la technique',
+                        onPressed: () => _showVideo(pe.exercise),
+                      ),
+                    ],
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.ondemand_video),
-                  tooltip: 'Voir la technique',
-                  onPressed: () => _showVideo(pe.exercise),
-                ),
-              ],
-            ),
-            Text('🎯 Muscle : ${pe.exercise.primaryMuscle}',
-                style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 4),
-            Text('Objectif : ${pe.sets} séries × ${_presc[i].targetReps} reps '
-                '· repos ${pe.restSeconds}s'),
-            Text(
-              _presc[i].bodyweight
-                  ? '💡 Au poids du corps'
-                  : '💡 Charge conseillée : ${_presc[i].suggestedWeightKg!.toStringAsFixed(0)} kg',
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                SizedBox(
-                  width: 110,
-                  child: TextField(
-                    controller: _weights[i],
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Charge (kg)',
-                      isDense: true,
-                    ),
+                  Text('🎯 Muscle : ${pe.exercise.primaryMuscle}',
+                      style: Theme.of(context).textTheme.bodySmall),
+                  const SizedBox(height: 4),
+                  Text(
+                      'Objectif : ${pe.sets} séries × ${_presc[i].targetReps} reps '
+                      '· repos ${pe.restSeconds}s'),
+                  Text(
+                    _presc[i].bodyweight
+                        ? '💡 Au poids du corps'
+                        : '💡 Charge conseillée : ${_presc[i].suggestedWeightKg!.toStringAsFixed(0)} kg',
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.primary),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Text('Séries : $done / ${pe.sets}'),
-                const Spacer(),
-                FilledButton(
-                  onPressed:
-                      (complete || !isCurrent) ? null : () => _validate(i),
-                  child: const Text('Valider'),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 110,
+                        child: TextField(
+                          controller: _weights[i],
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Charge (kg)',
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text('Séries : $done / ${pe.sets}'),
+                      const Spacer(),
+                      FilledButton(
+                        onPressed: (complete || !isCurrent)
+                            ? null
+                            : () => _validate(i),
+                        child: const Text('Valider'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

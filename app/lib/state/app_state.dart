@@ -19,6 +19,7 @@ class AppState extends ChangeNotifier {
   TrainingGoal goal = TrainingGoal.masse;
   Set<Equipment> equipment = {};
   int daysPerWeek = 3;
+  int sessionMinutes = 45;
 
   int totalXp = 0;
   Rank currentRank = Rank.e;
@@ -74,6 +75,16 @@ class AppState extends ChangeNotifier {
     return days[today % days.length];
   }
 
+  /// La séance du jour raccourcie pour tenir dans [minutes].
+  WorkoutDay workoutForDuration(int minutes) =>
+      trimToDuration(todaysWorkout, minutes);
+
+  void setSessionMinutes(int minutes) {
+    sessionMinutes = minutes;
+    _save();
+    notifyListeners();
+  }
+
   // --- Chargement / sauvegarde ---
   Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
@@ -111,6 +122,7 @@ class AppState extends ChangeNotifier {
         'goal': goal.name,
         'equipment': equipment.map((e) => e.name).toList(),
         'daysPerWeek': daysPerWeek,
+        'sessionMinutes': sessionMinutes,
         'totalXp': totalXp,
         'currentRank': currentRank.name,
         'stats': {
@@ -146,6 +158,7 @@ class AppState extends ChangeNotifier {
         .map((e) => Equipment.values.byName(e as String))
         .toSet();
     daysPerWeek = j['daysPerWeek'] as int? ?? 3;
+    sessionMinutes = j['sessionMinutes'] as int? ?? 45;
     totalXp = j['totalXp'] as int? ?? 0;
     currentRank = Rank.values.byName(j['currentRank'] as String? ?? 'e');
     final st = j['stats'] as Map<String, dynamic>?;

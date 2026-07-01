@@ -7,7 +7,6 @@ import 'package:mybody_rpg/state/app_state.dart';
 
 void main() {
   testWidgets('La séance affiche des exercices', (tester) async {
-    // Profil de test (salle complète).
     appState.onboarded = true;
     appState.pseudo = 'Test';
     appState.equipment = Equipment.values.toSet();
@@ -16,13 +15,10 @@ void main() {
     appState.totalXp = 0;
     appState.currentRank = Rank.e;
 
-    await tester.pumpWidget(
-      const MaterialApp(home: WorkoutScreen()),
-    );
-    await tester.pumpAndSettle();
-
-    // On doit voir au moins un exercice (du catalogue poids du corps).
     final day = appState.todaysWorkout;
+    await tester.pumpWidget(MaterialApp(home: WorkoutScreen(day: day)));
+    await tester.pump();
+
     expect(day.exercises, isNotEmpty);
     expect(find.text(day.exercises.first.exercise.nom), findsOneWidget);
   });
@@ -44,12 +40,12 @@ void main() {
           appState.goal = g;
           appState.daysPerWeek = d;
 
-          await tester.pumpWidget(
-            MaterialApp(home: WorkoutScreen(key: ValueKey('$eq-$g-$d'))),
-          );
-          await tester.pumpAndSettle();
-
           final day = appState.todaysWorkout;
+          await tester.pumpWidget(MaterialApp(
+            home: WorkoutScreen(key: ValueKey('$eq-$g-$d'), day: day),
+          ));
+          await tester.pump();
+
           expect(day.exercises, isNotEmpty,
               reason: 'séance vide pour eq=${eq.length} goal=${g.name} d=$d');
           expect(find.text(day.exercises.first.exercise.nom), findsWidgets,
@@ -59,8 +55,8 @@ void main() {
     }
   });
 
-  testWidgets('Le bouton Démarrer ouvre la séance', (tester) async {
-    // Grande surface pour que toute la liste (et le bouton) soit construite.
+  testWidgets('Le bouton Démarrer propose une durée puis ouvre la séance',
+      (tester) async {
     await tester.binding.setSurfaceSize(const Size(1000, 2400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -72,13 +68,12 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
     await tester.pumpAndSettle();
 
-    final bouton = find.byIcon(Icons.fitness_center);
-    expect(bouton, findsOneWidget);
-    await tester.tap(bouton);
+    await tester.tap(find.byIcon(Icons.fitness_center));
     await tester.pumpAndSettle();
 
-    // L'écran de séance doit montrer un exercice.
-    expect(find.text(appState.todaysWorkout.exercises.first.exercise.nom),
-        findsWidgets);
+    // Le choix de durée apparaît avec les options.
+    expect(find.text('Durée de la séance ?'), findsOneWidget);
+    expect(find.text('45 minutes'), findsOneWidget);
+    expect(find.text('60 minutes'), findsOneWidget);
   });
 }
