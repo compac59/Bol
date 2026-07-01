@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mybody_rpg_engine/mybody_rpg_engine.dart';
 
 import '../state/app_state.dart';
+import '../widgets/body_map.dart';
 
 class WorkoutScreen extends StatefulWidget {
   const WorkoutScreen({super.key});
@@ -117,11 +118,30 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       bottomNavigationBar: _restRemaining > 0 ? _restBar() : null,
       body: exercises.isEmpty
           ? const Center(child: Text('Aucun exercice pour cette séance.'))
-          : ListView.builder(
+          : ListView(
               padding: const EdgeInsets.all(16),
-              itemCount: exercises.length,
-              itemBuilder: (context, i) => _exerciseCard(i),
+              children: [
+                _muscleMapCard(),
+                for (var i = 0; i < exercises.length; i++) _exerciseCard(i),
+              ],
             ),
+    );
+  }
+
+  Widget _muscleMapCard() {
+    final worked = {for (final pe in _day.exercises) pe.exercise.group};
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text('Muscles travaillés aujourd\'hui',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            BodyMap(worked: worked),
+          ],
+        ),
+      ),
     );
   }
 
