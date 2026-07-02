@@ -155,12 +155,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _section(String title) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Text(title,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold)),
+        padding: const EdgeInsets.only(bottom: 10, top: 4),
+        child: Row(
+          children: [
+            Container(
+              width: 4,
+              height: 18,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(title.toUpperCase(),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(letterSpacing: 1.3)),
+          ],
+        ),
       );
 
   Widget _testField(TextEditingController c, String label) => Padding(

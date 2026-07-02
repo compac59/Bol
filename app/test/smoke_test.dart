@@ -17,7 +17,7 @@ void main() {
 
     final day = appState.todaysWorkout;
     await tester.pumpWidget(MaterialApp(home: WorkoutScreen(day: day)));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(day.exercises, isNotEmpty);
     expect(find.text(day.exercises.first.exercise.nom), findsOneWidget);
@@ -44,7 +44,7 @@ void main() {
           await tester.pumpWidget(MaterialApp(
             home: WorkoutScreen(key: ValueKey('$eq-$g-$d'), day: day),
           ));
-          await tester.pump();
+          await tester.pumpAndSettle();
 
           expect(day.exercises, isNotEmpty,
               reason: 'séance vide pour eq=${eq.length} goal=${g.name} d=$d');
@@ -68,7 +68,7 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.fitness_center));
+    await tester.tap(find.textContaining('DÉMARRER'));
     await tester.pumpAndSettle();
 
     // Le choix de durée apparaît avec les options.
