@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mybody_rpg_engine/mybody_rpg_engine.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -83,10 +84,30 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   void _validate(int index) {
     final weight =
         double.tryParse(_weights[index].text.replaceAll(',', '.')) ?? 0;
-    final reps = _day.exercises[index].minReps;
+    final reps = _presc[index].targetReps;
     final rest = _session.validateSet(index, reps: reps, weightKg: weight);
     setState(() {});
     if (rest != null && rest > 0) _startRest(rest);
+
+    // Exercice terminé : on applique la double progression et on affiche
+    // la consigne pour la prochaine fois.
+    if (rest == null) {
+      final pe = _day.exercises[index];
+      final result = appState.recordExerciseResult(
+        exercise: pe.exercise,
+        weightKg: weight,
+        repsPerSet: [for (final s in _session.setsOf(index)) s.reps],
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor:
+            result.isMilestone ? AppColors.violet : AppColors.surface,
+        content: Text(result.message,
+            style: const TextStyle(color: AppColors.text)),
+      ));
+    }
+
     if (_session.isComplete) _finish();
   }
 
@@ -368,27 +389,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   void _showVideo(Exercise ex) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ex.nom),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Vidéo technique (copie le lien) :'),
-            const SizedBox(height: 8),
-            SelectableText(ex.videoSearchUrl,
-                style: const TextStyle(color: AppColors.neon)),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('FERMER'),
-          ),
-        ],
-      ),
-    );
+    launchUrl(Uri.parse(ex.videoSearchUrl),
+        mode: LaunchMode.externalApplication);
   }
 }

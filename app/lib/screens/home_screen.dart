@@ -4,6 +4,7 @@ import 'package:mybody_rpg_engine/mybody_rpg_engine.dart';
 
 import '../state/app_state.dart';
 import '../theme.dart';
+import 'profile_screen.dart';
 import 'workout_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -12,7 +13,18 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('MyBody:RPG')),
+      appBar: AppBar(
+        title: const Text('MyBody:RPG'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            tooltip: 'Profil',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            ),
+          ),
+        ],
+      ),
       body: ListenableBuilder(
         listenable: appState,
         builder: (context, _) {

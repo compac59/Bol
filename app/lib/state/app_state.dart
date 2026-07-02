@@ -41,9 +41,79 @@ class AppState extends ChangeNotifier {
     pull: 60,
   );
 
-  /// Consigne (charge + reps) conseillée pour un exercice.
-  ExercisePrescription prescriptionFor(Exercise ex) =>
-      prescribe(exercise: ex, profile: profile, goal: goal);
+  /// Progression mémorisée par exercice (double progression) : id -> état.
+  Map<String, ProgressionState> exerciseProgress = {};
+
+  /// Consigne (charge + reps) pour un exercice : reprend la progression
+  /// mémorisée si elle existe, sinon estime depuis le profil de force.
+  ExercisePrescription prescriptionFor(Exercise ex) {
+    final p = exerciseProgress[ex.id];
+    if (p != null) {
+      return ExercisePrescription(
+        suggestedWeightKg: p.weightKg,
+        targetReps: p.targetReps,
+        bodyweight: false,
+      );
+    }
+    return prescribe(exercise: ex, profile: profile, goal: goal);
+  }
+
+  /// Enregistre le résultat d'un exercice terminé et applique la double
+  /// progression (« +1 rep » puis « +poids » au palier). Renvoie le résultat
+  /// (message prêt à afficher).
+  ProgressionResult recordExerciseResult({
+    required Exercise exercise,
+    required double weightKg,
+    required List<int> repsPerSet,
+  }) {
+    final presc = prescriptionFor(exercise);
+    final current = ProgressionState(
+      weightKg: weightKg,
+      targetReps: presc.targetReps,
+    );
+    final result = applySession(
+      state: current,
+      repsPerSet: repsPerSet,
+      goal: goal,
+      group: exercise.group,
+    );
+    exerciseProgress[exercise.id] = result.next;
+    _save();
+    notifyListeners();
+    return result;
+  }
+
+  /// Met à jour le profil de force (et les stats) depuis de nouveaux maxs.
+  void updateStrengthProfile(List<PerformanceEntry> entries) {
+    if (entries.isEmpty) return;
+    profile =
+        strengthProfileFromTest(entries: entries, bodyWeightKg: bodyWeight);
+    stats = evaluate(entries: entries, bodyWeightKg: bodyWeight).stats;
+    _save();
+    notifyListeners();
+  }
+
+  /// Tente l'examen de promotion du chasseur avec les maxs fournis.
+  PromotionResult attemptPromotion(List<PerformanceEntry> entries) {
+    final result = evaluatePromotion(
+      currentRank: currentRank,
+      level: level,
+      entries: entries,
+      bodyWeightKg: bodyWeight,
+    );
+    if (result.passed) currentRank = result.newRank;
+    updateStrengthProfile(entries);
+    _save();
+    notifyListeners();
+    return result;
+  }
+
+  /// Coche/décoche un équipement depuis le profil.
+  void toggleEquipment(Equipment e) {
+    equipment.contains(e) ? equipment.remove(e) : equipment.add(e);
+    _save();
+    notifyListeners();
+  }
 
   /// Défis du jour déjà complétés (par identifiant), et le jour concerné.
   Set<String> _questsDone = {};
@@ -116,6 +186,7 @@ class AppState extends ChangeNotifier {
     streak = const StreakState();
     _questsDone = {};
     _questsDoneDay = -1;
+    exerciseProgress = {};
     notifyListeners();
   }
 
@@ -144,6 +215,10 @@ class AppState extends ChangeNotifier {
         },
         'questsDone': _questsDone.toList(),
         'questsDoneDay': _questsDoneDay,
+        'exerciseProgress': {
+          for (final e in exerciseProgress.entries)
+            e.key: {'w': e.value.weightKg, 'r': e.value.targetReps},
+        },
         'profile': {
           'bench': profile.bench,
           'squat': profile.squat,
@@ -187,6 +262,15 @@ class AppState extends ChangeNotifier {
     _questsDone =
         ((j['questsDone'] as List?) ?? []).map((e) => e as String).toSet();
     _questsDoneDay = j['questsDoneDay'] as int? ?? -1;
+    final ep = j['exerciseProgress'] as Map<String, dynamic>?;
+    exerciseProgress = {
+      if (ep != null)
+        for (final e in ep.entries)
+          e.key: ProgressionState(
+            weightKg: ((e.value as Map)['w'] as num).toDouble(),
+            targetReps: (e.value as Map)['r'] as int,
+          ),
+    };
     final pf = j['profile'] as Map<String, dynamic>?;
     if (pf != null) {
       profile = StrengthProfile(

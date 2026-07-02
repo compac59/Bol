@@ -55,7 +55,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return entries;
   }
 
-  void _create() {
+  Future<void> _create() async {
+    // Sans équipement, aucune séance ne peut être générée : on prévient.
+    if (_equipment.isEmpty) {
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('AUCUN ÉQUIPEMENT'),
+          content: const Text(
+              'Tu n\'as coché aucun équipement : aucune séance ne pourra être '
+              'proposée. Coche au moins un matériel (haltères, barre, machines…). '
+              'Tu pourras le modifier plus tard dans ton profil.'),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('CHOISIR MON ÉQUIPEMENT'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('CONTINUER QUAND MÊME'),
+            ),
+          ],
+        ),
+      );
+      if (ok != true) return;
+    }
     final pseudo = _pseudo.text.trim().isEmpty ? 'Chasseur' : _pseudo.text.trim();
     final bw = double.tryParse(_bodyWeight.text.replaceAll(',', '.')) ?? 75;
     appState.completeOnboarding(

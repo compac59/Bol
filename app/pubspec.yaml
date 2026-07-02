@@ -48,6 +48,9 @@ dependencies:
   # Micro-animations déclaratives (apparitions, glow, shimmer).
   flutter_animate: ^4.5.0
 
+  # Ouverture des liens externes (vidéos technique).
+  url_launcher: ^6.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
