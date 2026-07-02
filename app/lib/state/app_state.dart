@@ -75,9 +75,13 @@ class AppState extends ChangeNotifier {
     return days[today % days.length];
   }
 
-  /// La séance du jour raccourcie pour tenir dans [minutes].
-  WorkoutDay workoutForDuration(int minutes) =>
-      trimToDuration(todaysWorkout, minutes);
+  /// La séance du jour ajustée à la durée choisie (étendue ou raccourcie).
+  WorkoutDay workoutForDuration(int minutes) => fitToDuration(
+        day: todaysWorkout,
+        targetMinutes: minutes,
+        equipment: equipment,
+        goal: goal,
+      );
 
   void setSessionMinutes(int minutes) {
     sessionMinutes = minutes;

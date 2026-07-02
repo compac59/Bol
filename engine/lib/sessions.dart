@@ -188,18 +188,23 @@ List<Exercise> _pick(
   return result;
 }
 
-/// Durée estimée d'un exercice (secondes) : séries de travail + repos entre
-/// elles + un temps de mise en place/transition.
-int estimatedExerciseSeconds(PlannedExercise pe) {
-  const workPerSet = 40; // secondes par série
-  const setup = 60; // installation / transition entre exercices
-  return pe.sets * workPerSet + (pe.sets - 1) * pe.restSeconds + setup;
+/// Temps de transition entre deux exercices (changement de machine,
+/// installation) : 3 minutes.
+const int transitionSeconds = 180;
+
+/// Temps de travail d'un exercice (secondes) : séries + repos entre elles.
+int exerciseWorkSeconds(PlannedExercise pe) {
+  const workPerSet = 40; // secondes d'effort par série
+  return pe.sets * workPerSet + (pe.sets - 1) * pe.restSeconds;
 }
 
-/// Durée totale estimée d'une séance, en minutes.
+/// Durée totale estimée d'une séance, en minutes (travail + transitions).
 int estimatedDurationMinutes(WorkoutDay day) {
-  final s = day.exercises.fold<int>(0, (a, e) => a + estimatedExerciseSeconds(e));
-  return (s / 60).round();
+  if (day.exercises.isEmpty) return 0;
+  final work =
+      day.exercises.fold<int>(0, (a, e) => a + exerciseWorkSeconds(e));
+  final transitions = (day.exercises.length - 1) * transitionSeconds;
+  return ((work + transitions) / 60).round();
 }
 
 /// Raccourcit une séance pour tenir dans [targetMinutes] : garde les exercices
@@ -210,7 +215,8 @@ WorkoutDay trimToDuration(WorkoutDay day, int targetMinutes) {
   final kept = <PlannedExercise>[];
   var acc = 0;
   for (final e in day.exercises) {
-    final t = estimatedExerciseSeconds(e);
+    final t = exerciseWorkSeconds(e) +
+        (kept.isEmpty ? 0 : transitionSeconds);
     if (kept.isEmpty || acc + t <= target) {
       kept.add(e);
       acc += t;
@@ -219,6 +225,79 @@ WorkoutDay trimToDuration(WorkoutDay day, int targetMinutes) {
     }
   }
   return WorkoutDay(nom: day.nom, exercises: kept);
+}
+
+/// Ajuste une séance à la durée choisie : **étend** la séance avec d'autres
+/// exercices des mêmes groupes musculaires (réalisables avec l'équipement)
+/// si elle est trop courte, puis la **raccourcit** si elle est trop longue.
+WorkoutDay fitToDuration({
+  required WorkoutDay day,
+  required int targetMinutes,
+  required Set<Equipment> equipment,
+  required TrainingGoal goal,
+  int maxExercises = 12,
+}) {
+  if (day.exercises.isEmpty) return day;
+
+  final target = targetMinutes * 60;
+  final sets = _setsFor(goal);
+  final rest = _restFor(goal);
+
+  int totalOf(List<PlannedExercise> list) =>
+      list.fold<int>(0, (a, e) => a + exerciseWorkSeconds(e)) +
+      (list.length - 1) * transitionSeconds;
+
+  final exercises = [...day.exercises];
+  final usedIds = {for (final e in exercises) e.exercise.id};
+  final groups = {for (final e in exercises) e.exercise.group}.toList();
+
+  // Réserve d'exercices supplémentaires : mêmes groupes, équipement dispo,
+  // pas déjà dans la séance ; poly-articulaires d'abord, en alternant les
+  // groupes pour rester équilibré.
+  final pool = <Exercise>[];
+  final byGroup = {
+    for (final g in groups)
+      g: availableExercises(equipment)
+          .where((e) => e.group == g && !usedIds.contains(e.id))
+          .toList()
+        ..sort((a, b) {
+          if (a.isCompound == b.isCompound) return 0;
+          return a.isCompound ? -1 : 1;
+        }),
+  };
+  var added = true;
+  while (added) {
+    added = false;
+    for (final g in groups) {
+      final list = byGroup[g]!;
+      if (list.isNotEmpty) {
+        pool.add(list.removeAt(0));
+        added = true;
+      }
+    }
+  }
+
+  // Extension : on ajoute tant que ça tient dans la durée cible.
+  for (final ex in pool) {
+    if (exercises.length >= maxExercises) break;
+    final candidate = PlannedExercise(
+      exercise: ex,
+      sets: sets,
+      minReps: goal.minReps,
+      maxReps: goal.maxReps,
+      restSeconds: rest,
+    );
+    final withCandidate = totalOf(exercises) +
+        transitionSeconds +
+        exerciseWorkSeconds(candidate);
+    if (withCandidate <= target) {
+      exercises.add(candidate);
+    }
+  }
+
+  // Réduction si la base dépasse déjà la durée demandée.
+  return trimToDuration(
+      WorkoutDay(nom: day.nom, exercises: exercises), targetMinutes);
 }
 
 /// Génère un programme hebdomadaire adapté à l'équipement et à l'objectif.
